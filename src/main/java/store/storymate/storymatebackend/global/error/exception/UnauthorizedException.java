@@ -1,0 +1,8 @@
+package store.storymate.storymatebackend.global.error.exception;
+
+public class UnauthorizedException extends RuntimeException {
+
+    public UnauthorizedException(String message) {
+        super(message);
+    }
+}
