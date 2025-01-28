@@ -1,4 +1,4 @@
-package store.storymate.storymatebackend.global.entity;
+package store.storymate.storymatebackend.global.domain;
 
 public enum Status {
     ACTIVE("활성화"),
