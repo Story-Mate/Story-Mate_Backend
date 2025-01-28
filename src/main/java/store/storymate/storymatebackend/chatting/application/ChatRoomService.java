@@ -1,7 +1,6 @@
 package store.storymate.storymatebackend.chatting.application;
 
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,38 +10,40 @@ import store.storymate.storymatebackend.chatting.api.dto.PageInfoResDto;
 import store.storymate.storymatebackend.chatting.api.dto.request.ChatRoomReqDto;
 import store.storymate.storymatebackend.chatting.api.dto.response.ChatRoomResDto;
 import store.storymate.storymatebackend.chatting.api.dto.response.ChatRoomResList;
-import store.storymate.storymatebackend.chatting.domain.ChatMessage;
 import store.storymate.storymatebackend.chatting.domain.ChatRoom;
-import store.storymate.storymatebackend.chatting.domain.repository.ChatMessageRepository;
 import store.storymate.storymatebackend.chatting.domain.repository.ChatRoomRepository;
+import store.storymate.storymatebackend.global.domain.Status;
+import store.storymate.storymatebackend.member.domain.Member;
+import store.storymate.storymatebackend.member.domain.repository.MemberRepository;
+import store.storymate.storymatebackend.member.exception.MemberNotFoundException;
 
 @Service
 @RequiredArgsConstructor
 public class ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
-    private final ChatMessageRepository chatMessageRepository;
-//    private final MemberRepository memberRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional
     public ChatRoomResDto createChatRoom(String email, ChatRoomReqDto chatRoomReqDto) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(MemberNotFoundException::new);
 
         ChatRoom chatRoom = ChatRoom.builder()
-                .name(chatRoomReqDto.roomName())
-                .fromMember(frommember)
-                .toMember(toMember)
+                .status(Status.ACTIVE)
+                .title(chatRoomReqDto.title())
+                .liking(0)
+                .member(member)
                 .build();
 
         ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom);
 
-        return ChatRoomResDto.from(savedChatRoom.getId(),
-                savedChatRoom.getRoomName(),
-                frommember.getId(),
-                toMember.getId(),
-                frommember.getName(),
-                null,
-                0,
-                toMember.getPicture());
+        return ChatRoomResDto.from(
+                savedChatRoom.getId(),
+                savedChatRoom.getTitle(),
+                savedChatRoom.getLiking(),
+                member.getName(),
+                member.getProfileImageUrl());
     }
 
     public ChatRoomResList getChatRooms(String email, Pageable pageable) {
@@ -54,13 +55,10 @@ public class ChatRoomService {
         List<ChatRoomResDto> chatRoomResDtos = chatRoomPage.getContent().stream()
                 .map(chatRoom -> ChatRoomResDto.builder()
                         .roomId(chatRoom.getId())
-                        .name(chatRoom.getRoomName())
-                        .fromMemberId(chatRoom.getFromMember().getId())
-                        .toMemberId(chatRoom.getToMember().getId())
+                        .title(chatRoom.getTitle())
+                        .liking(chatRoom.getLiking())
                         .loginUserName(member.getName())
-                        .recentMessage(getRecentMessage(chatRoom))
-                        .unreadNotification(notificationRepository.countUnreadChatNotifications(member, chatRoom))
-                        .memberImage(getOtherMemberImage(chatRoom, member))
+                        .memberImage(member.getProfileImageUrl())
                         .build()
                 )
                 .toList();
@@ -72,21 +70,5 @@ public class ChatRoomService {
                 .build();
 
         return ChatRoomResList.of(chatRoomResDtos, pageInfoResDto);
-    }
-
-    private String getOtherMemberImage(ChatRoom chatRoom, Member currentUser) {
-        if (chatRoom.getFromMember().getId().equals(currentUser.getId())) {
-            return chatRoom.getToMember().getPicture();
-        } else {
-            return chatRoom.getFromMember().getPicture();
-        }
-    }
-
-    private String getRecentMessage(ChatRoom chatRoom) {
-        Optional<ChatMessage> chatMessage = chatMessageRepository.findFirstByChatRoomOrderByTimestampDesc(chatRoom);
-        if (chatMessage.isPresent()) {
-            return chatMessage.get().getContent();
-        }
-        return null;
     }
 }

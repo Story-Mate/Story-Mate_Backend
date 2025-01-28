@@ -1,34 +1,26 @@
 package store.storymate.storymatebackend.chatting.api.dto.response;
 
+import jakarta.persistence.criteria.CriteriaBuilder.In;
 import lombok.Builder;
 
 @Builder
 public record ChatRoomResDto(
         Long roomId,
-        String name,
-        Long fromMemberId,
-        Long toMemberId,
+        String title,
         String loginUserName,
-        String recentMessage,
-        Integer unreadNotification,
+        Integer liking,
         String memberImage
 ) {
     public static ChatRoomResDto from(Long roomId,
-                                      String name,
-                                      Long fromMemberId,
-                                      Long toMemberId,
+                                      String title,
+                                      Integer liking,
                                       String loginUserName,
-                                      String recentMessage,
-                                      Integer unreadNotification,
                                       String memberImage) {
         return ChatRoomResDto.builder()
                 .roomId(roomId)
-                .name(name)
-                .fromMemberId(fromMemberId)
-                .toMemberId(toMemberId)
+                .title(title)
+                .liking(liking)
                 .loginUserName(loginUserName)
-                .recentMessage(recentMessage)
-                .unreadNotification(unreadNotification)
                 .memberImage(memberImage)
                 .build();
     }

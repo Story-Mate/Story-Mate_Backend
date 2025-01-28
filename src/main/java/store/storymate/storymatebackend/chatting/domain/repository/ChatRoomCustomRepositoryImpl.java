@@ -10,6 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import store.storymate.storymatebackend.chatting.domain.ChatRoom;
+import store.storymate.storymatebackend.chatting.domain.QChatRoom;
+import store.storymate.storymatebackend.member.domain.Member;
 
 @Repository
 @RequiredArgsConstructor
@@ -22,32 +24,22 @@ public class ChatRoomCustomRepositoryImpl implements ChatRoomCustomRepository {
     public Page<ChatRoom> findChatRoomsByMember(Member member, Pageable pageable) {
         QChatRoom chatRoom = QChatRoom.chatRoom;
 
-        // QueryDSL 쿼리 작성
         List<ChatRoom> chatRooms = queryFactory.selectFrom(chatRoom)
-                .where(
-                        isFromMember(member).or(isToMember(member))
-                )
+                .where(isMember(member))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
         long totalCount = queryFactory.selectFrom(chatRoom)
-                .where(
-                        isFromMember(member).or(isToMember(member))
-                )
+                .where(isMember(member))
                 .fetchCount();
 
         return new PageImpl<>(chatRooms, pageable, totalCount);
     }
 
-    // 조건 메서드
-    private BooleanExpression isFromMember(Member member) {
+    private BooleanExpression isMember(Member member) {
         QChatRoom chatRoom = QChatRoom.chatRoom;
-        return chatRoom.fromMember.eq(member);
+        return chatRoom.member.eq(member);
     }
 
-    private BooleanExpression isToMember(Member member) {
-        QChatRoom chatRoom = QChatRoom.chatRoom;
-        return chatRoom.toMember.eq(member);
-    }
 }
