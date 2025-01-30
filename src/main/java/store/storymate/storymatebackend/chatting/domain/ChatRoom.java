@@ -14,6 +14,7 @@ import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import store.storymate.storymatebackend.characters.domain.Characters;
 import store.storymate.storymatebackend.global.domain.Status;
 import store.storymate.storymatebackend.member.domain.Member;
 
@@ -39,11 +40,16 @@ public class ChatRoom {
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChatMessage> messages = new ArrayList<>();
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "characters_id", nullable = false)
+    private Characters characters;
+
     @Builder
-    public ChatRoom(Status status, String title, Integer liking, Member member) {
+    public ChatRoom(Status status, String title, Integer liking, Member member, Characters characters) {
         this.status = status;
         this.title = title;
         this.liking = liking;
         this.member = member;
+        this.characters = characters;
     }
 }

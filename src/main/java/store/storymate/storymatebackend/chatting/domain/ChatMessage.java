@@ -42,24 +42,4 @@ public class ChatMessage {
         this.chatRoom = chatRoom;
         this.timestamp = timestamp;
     }
-
-
-    public Map<String, String> toMap() {
-        Map<String, String> map = new HashMap<>();
-        map.put("id", id != null ? id.toString() : null);
-        map.put("sender", sender);
-        map.put("content", content);
-        map.put("timestamp", timestamp != null ? timestamp.toString() : null);
-        map.put("chatRoomId", chatRoom != null ? chatRoom.getId().toString() : null);
-        return map;
-    }
-
-    public static ChatMessage fromMap(Map<String, String> map, ChatRoom chatRoom) {
-        return ChatMessage.builder()
-                .sender(map.get("sender"))
-                .content(map.get("content"))
-                .chatRoom(chatRoom) // ChatRoom은 외부에서 주입
-                .timestamp(LocalDateTime.parse(map.get("timestamp"))) // 타임스탬프 파싱
-                .build();
-    }
 }
