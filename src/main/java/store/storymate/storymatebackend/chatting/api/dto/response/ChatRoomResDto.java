@@ -10,14 +10,16 @@ public record ChatRoomResDto(
         String loginUserName,
         Integer liking,
         String memberImage,
-        String charactersName
+        String charactersName,
+        String charactersImage
 ) {
     public static ChatRoomResDto from(Long roomId,
                                       String title,
                                       Integer liking,
                                       String loginUserName,
                                       String memberImage,
-                                      String charactersName) {
+                                      String charactersName,
+                                      String charactersImage) {
         return ChatRoomResDto.builder()
                 .roomId(roomId)
                 .title(title)
@@ -25,6 +27,7 @@ public record ChatRoomResDto(
                 .loginUserName(loginUserName)
                 .memberImage(memberImage)
                 .charactersName(charactersName)
+                .charactersImage(charactersImage)
                 .build();
     }
 }
