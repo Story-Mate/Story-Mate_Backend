@@ -6,6 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import store.storymate.storymatebackend.characters.domain.Characters;
+import store.storymate.storymatebackend.characters.domain.repository.CharactersRepository;
 import store.storymate.storymatebackend.chatting.api.dto.PageInfoResDto;
 import store.storymate.storymatebackend.chatting.api.dto.request.ChatRoomReqDto;
 import store.storymate.storymatebackend.chatting.api.dto.response.ChatRoomResDto;
@@ -23,17 +25,22 @@ public class ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
     private final MemberRepository memberRepository;
+    private final CharactersRepository charactersRepository;
 
     @Transactional
     public ChatRoomResDto createChatRoom(String email, ChatRoomReqDto chatRoomReqDto) {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(MemberNotFoundException::new);
 
+        Characters characters = charactersRepository.findById(chatRoomReqDto.charactersId())
+                .orElseThrow();
+
         ChatRoom chatRoom = ChatRoom.builder()
                 .status(Status.ACTIVE)
                 .title(chatRoomReqDto.title())
                 .liking(0)
                 .member(member)
+                .characters(characters)
                 .build();
 
         ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom);
@@ -43,9 +50,13 @@ public class ChatRoomService {
                 savedChatRoom.getTitle(),
                 savedChatRoom.getLiking(),
                 member.getName(),
-                member.getProfileImageUrl());
+                member.getProfileImageUrl(),
+                characters.getName(),
+                characters.getImageUrl());
     }
 
+    @Transactional
+    // TODO: 추후에 작품명도 추가로 제공해줘야 함.
     public ChatRoomResList getChatRooms(String email, Pageable pageable) {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(MemberNotFoundException::new);
@@ -59,6 +70,8 @@ public class ChatRoomService {
                         .liking(chatRoom.getLiking())
                         .loginUserName(member.getName())
                         .memberImage(member.getProfileImageUrl())
+                        .charactersName(chatRoom.getCharacters().getName())
+                        .charactersImage(chatRoom.getCharacters().getImageUrl())
                         .build()
                 )
                 .toList();
