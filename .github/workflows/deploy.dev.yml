@@ -71,7 +71,7 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
-          source: docker-compose.dev.yml
+          source: deploy/docker-compose.dev.yml
           target: /home/${{ secrets.EC2_USER }}/
 
       # EC2에 접속해 docker-compose를 통한 배포 실행
