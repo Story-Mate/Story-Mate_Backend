@@ -1,0 +1,75 @@
+services:
+  api:
+    container_name: storymate-api
+    image: storymate/be:${TAG}
+    ports:
+      - "8080:8080"
+    expose:
+      - "8080"
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - DATABASE_USERNAME=${DATABASE_USERNAME}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - JWT_ACCESS_TOKEN_SECRET=${JWT_ACCESS_TOKEN_SECRET}
+      - ACCESS_TOKEN_EXPIRATION_TIME=${ACCESS_TOKEN_EXPIRATION_TIME}
+      - REFRESH_TOKEN_EXPIRATION_TIME=${REFRESH_TOKEN_EXPIRATION_TIME}
+      - OAUTH_KAKAO_REST_API_KEY=${OAUTH_KAKAO_REST_API_KEY}
+      - OAUTH_KAKAO_REDIRECT_URL=${OAUTH_KAKAO_REDIRECT_URL}
+      - TEST_DATABASE_URL=${TEST_DATABASE_URL}
+      - TEST_DATABASE_USERNAME=${TEST_DATABASE_USERNAME}
+      - TEST_DATABASE_PASSWORD=${TEST_DATABASE_PASSWORD}
+    networks:
+      - db-connection
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+  db:
+    container_name: storymate-db
+    image: bitnami/mariadb:11.4
+    ports:
+      - "3306:3306"
+    expose:
+      - "3306"
+    environment:
+      - TZ=Asia/Seoul
+      - MARIADB_DATABASE=${MARIADB_DATABASE}
+      - MARIADB_PORT=${MARIADB_PORT}
+      - MYSQL_DATA_DIR=${MYSQL_DATA_DIR}
+      - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
+      - MARIADB_USER=${MARIADB_USER}
+      - MARIADB_PASSWORD=${MARIADB_PASSWORD}
+      - MARIADB_ROOT_HOST=%
+      - LC_ALL=C.UTF-8
+    volumes:
+      - ~/docker/mariadb/etc/mysql/conf.d:/etc/mysql/conf.d:ro
+      - ~/docker/mariadb/var/lib/mysql:/var/lib/mysql
+      - ~/docker/mariadb/var/log/maria:/var/log/maria
+    networks:
+      - db-connection
+    healthcheck:
+      test: [ "CMD-SHELL", "mysqladmin ping -h localhost -p${MARIADB_ROOT_PASSWORD}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  redis:
+    container_name: storymate-redis
+    image: redis:7.2-alpine
+    ports:
+      - "6379:6379"
+    expose:
+      - "6379"
+    networks:
+      - db-connection
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  db-connection:
+    driver: bridge
+
