@@ -30,7 +30,6 @@ public class ChatMessageService {
         ChatRoom chatRoom = chatRoomRepository.findById(Long.parseLong(roomId))
                 .orElseThrow(ExistsChatRoomException::new);
 
-        // 메시지를 Redis에 저장
         ChatMessage chatMessage = ChatMessage.builder()
                 .sender(sender)
                 .content(content)
@@ -39,6 +38,11 @@ public class ChatMessageService {
                 .build();
 
         chatMessageRepository.save(chatMessage);
+
+        // ai 호출
+        // content, characterName, roomId
+
+        // 반환값 수정 -> ai로 받은 값을 호출하도록
     }
 
     public ChatMessageResList findChatMessages(Long roomId, Pageable pageable) {

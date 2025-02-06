@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import store.storymate.storymatebackend.chatting.domain.ChatRoom;
@@ -28,8 +29,16 @@ public class Characters extends BaseEntity {
 
     private String imageUrl;
 
-    private String like_count;
+    private Integer like_count;
 
     @OneToMany(mappedBy = "characters", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChatRoom> chatRoom = new ArrayList<>();
+
+    @Builder
+    public Characters(String description, String imageUrl, Integer likeCount, String name) {
+        this.description = description;
+        this.imageUrl = imageUrl;
+        this.like_count = likeCount;
+        this.name = name;
+    }
 }
