@@ -50,7 +50,7 @@ jobs:
       - name: Update docker-compose image tag
         run: |
           IMAGE_TAG=${{ github.sha }}
-          sed -i "s|image: storymate/be:${TAG}|image: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/storymate/be:$IMAGE_TAG|g" deploy/docker-compose.dev.yml
+          sed -i "s|image: storymate/be:latest|image: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/storymate/be:$IMAGE_TAG|g" deploy/docker-compose.dev.yml
 
       # .env 파일 생성
       - name: Write .env file from secret
@@ -71,7 +71,7 @@ jobs:
 
       # EC2에 접속해 docker-compose를 통한 배포 실행
       - name: Deploy application on EC2
-        uses: appleboy/ssh-action@v0.1.5
+        uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
