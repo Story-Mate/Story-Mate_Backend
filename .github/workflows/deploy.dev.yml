@@ -56,7 +56,6 @@ jobs:
       - name: Write .env file from secret
         run: |
           echo "${{ secrets.ENV_FILE }}" > ./deploy/.env
-          ll deploy
   
       # EC2로 docker-compose, .env 파일 복사 (scp 액션 사용)
       - name: Copy docker-compose file to EC2
