@@ -36,14 +36,14 @@ jobs:
       - name: Build Docker Image
         run: |
           IMAGE_TAG=${{ github.sha }}
-          docker build -t my-app:$IMAGE_TAG .
-          docker tag my-app:$IMAGE_TAG ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/my-app:$IMAGE_TAG
+          docker build -f deploy/dev.dockerfile -t storymate/be:$IMAGE_TAG .
+          docker tag storymate/be:$IMAGE_TAG ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/storymate/be:$IMAGE_TAG
 
       # Docker 이미지를 AWS ECR에 푸시
       - name: Push Docker Image to ECR
         run: |
           IMAGE_TAG=${{ github.sha }}
-          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/my-app:$IMAGE_TAG
+          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/storymate/be:$IMAGE_TAG
 
       # docker-compose 파일 내 이미지 태그 업데이트  
       #    docker-compose.yml 파일에 미리 placeholder (예: my-app:latest)로 설정되어 있다면 sed 명령어로 최신 태그로 변경합니다.
