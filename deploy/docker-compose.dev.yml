@@ -1,7 +1,7 @@
 services:
   api:
     container_name: storymate-api
-    image: storymate/be:${TAG}
+    image: storymate/be:latest
     ports:
       - "8080:8080"
     expose:
