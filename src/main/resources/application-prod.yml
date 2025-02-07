@@ -3,6 +3,11 @@ spring:
     activate:
       on-profile: prod
 
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
   jpa:
     hibernate:
       ddl-auto: validate
@@ -20,21 +25,14 @@ spring:
 
 logging:
   level:
-    org.hibernate.sql: debug
+    org.hibernate.SQL: debug
     org.hibernate.type: trace
 
 jwt:
-  secret: ${JWT_ACCESS_TOKEN_SECRET}
-token:
-  expire:
-    time:
-      access: ${ACCESS_TOKEN_EXPIRATION_TIME}
-      refresh: ${REFRESH_TOKEN_EXPIRATION_TIME}
-
-oauth:
-  kakao:
-    rest-api-key: ${OAUTH_KAKAO_REST_API_KEY}
-    redirect-url: ${OAUTH_KAKAO_REDIRECT_URL}
+  access-token-secret: ${JWT_ACCESS_TOKEN_SECRET}
+  refresh-token-secret: ${JWT_REFRESH_TOKEN_SECRET}
+  access-token-expiration-time: ${JWT_ACCESS_TOKEN_EXPIRATION_TIME}
+  refresh-token-expiration-time: ${JWT_REFRESH_TOKEN_EXPIRATION_TIME}
 
 server:
   url: ${PROD_SERVER_URL}
