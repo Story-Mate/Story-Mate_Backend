@@ -38,7 +38,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests(
                         authorize ->
                                 authorize
-                                        .requestMatchers("/walwal-actuator/**")
+                                        .requestMatchers("/**") // 일단 임시 허용
                                         .permitAll() // Actuator
                                         .requestMatchers("/auth/**")
                                         .permitAll() // Auth endpoints
