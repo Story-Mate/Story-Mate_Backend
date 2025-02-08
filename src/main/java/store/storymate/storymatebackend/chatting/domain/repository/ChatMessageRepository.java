@@ -11,6 +11,4 @@ import store.storymate.storymatebackend.chatting.domain.ChatRoom;
 @Repository
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
     Page<ChatMessage> findByChatRoom(ChatRoom chatRoom, Pageable pageable);
-
-    Optional<ChatMessage> findFirstByChatRoomOrderByTimestampDesc(ChatRoom chatRoom);
 }

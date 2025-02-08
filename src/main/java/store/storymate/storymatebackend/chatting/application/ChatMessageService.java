@@ -1,47 +1,60 @@
 package store.storymate.storymatebackend.chatting.application;
 
-import jakarta.transaction.Transactional;
+import jakarta.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 import store.storymate.storymatebackend.chatting.api.dto.PageInfoResDto;
+import store.storymate.storymatebackend.chatting.api.dto.request.ChatMessageSaveReqDto;
 import store.storymate.storymatebackend.chatting.api.dto.response.ChatMessageResDto;
 import store.storymate.storymatebackend.chatting.api.dto.response.ChatMessageResList;
 import store.storymate.storymatebackend.chatting.domain.ChatMessage;
 import store.storymate.storymatebackend.chatting.domain.ChatRoom;
 import store.storymate.storymatebackend.chatting.domain.repository.ChatMessageRepository;
 import store.storymate.storymatebackend.chatting.domain.repository.ChatRoomRepository;
+import store.storymate.storymatebackend.chatting.exception.AiChatRoomException;
 import store.storymate.storymatebackend.chatting.exception.ExistsChatRoomException;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ChatMessageService {
 
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageRepository chatMessageRepository;
-    private final WebClient webClient = WebClient.builder()
-            .baseUrl("http://ai.dev.storymate.site:5000")  // 기본 URL 설정
-            .build();
+    private WebClient webClient;
+
+    @Value("${ai.characters}")
+    private String baseUrl;
+
+    @PostConstruct
+    private void initWebClient() {
+        this.webClient = WebClient.builder()
+                .baseUrl(baseUrl)
+                .build();
+    }
 
     @Transactional
-    public void saveMessage(String roomId, String sender, String content) {
-        ChatRoom chatRoom = chatRoomRepository.findById(Long.parseLong(roomId))
+    public void saveMessage(ChatMessageSaveReqDto chatMessageSaveReqDto) {
+        ChatRoom chatRoom = chatRoomRepository.findById(Long.parseLong(chatMessageSaveReqDto.roomId()))
                 .orElseThrow(ExistsChatRoomException::new);
 
         ChatMessage chatMessage = ChatMessage.builder()
-                .sender(sender)
-                .content(content)
+                .sender(chatMessageSaveReqDto.sender())
+                .content(chatMessageSaveReqDto.content())
                 .timestamp(LocalDateTime.now())
                 .chatRoom(chatRoom)
                 .build();
@@ -49,33 +62,28 @@ public class ChatMessageService {
         chatMessageRepository.save(chatMessage);
     }
 
-    public String callAiApi(String sessionId, String characterName, String query) {
-        // 요청 데이터 구성
+    public String callAiApi(ChatMessageSaveReqDto chatMessageSaveReqDto) {
         Map<String, String> requestBody = new HashMap<>();
-        requestBody.put("session_id", sessionId);
-        requestBody.put("character_name", characterName);
-        requestBody.put("query", query);
+        requestBody.put("session_id", chatMessageSaveReqDto.roomId());
+        requestBody.put("character_name", chatMessageSaveReqDto.sender());
+        requestBody.put("query", chatMessageSaveReqDto.content());
 
-        try {
-            // 경로에 포함된 한글이나 특수문자를 인코딩하여 URL을 안전하게 생성
-            String encodedUri = UriComponentsBuilder.fromPath("/")
-                    .encode()
-                    .toUriString();
+        String encodedUri = UriComponentsBuilder.fromPath("/")
+                .encode()
+                .toUriString();
 
-            // WebClient를 이용한 POST 요청
-            return webClient.post()
-                    .uri(encodedUri)  // 안전하게 인코딩된 URI 사용
-                    .bodyValue(requestBody)
-                    .retrieve()
-                    .onStatus(HttpStatusCode::isError,  // 상태 코드가 에러인지 확인
-                            clientResponse -> Mono.error(new RuntimeException("AI 서버 오류 발생")))
-                    .bodyToMono(Map.class)
-                    .map(response -> (String) response.get("response"))  // 응답에서 "response" 추출
-                    .block();  // 동기적으로 결과 대기
-
-        } catch (WebClientResponseException e) {
-            throw new RuntimeException("AI 서버 응답 실패: " + e.getStatusCode() + " - " + e.getResponseBodyAsString());
-        }
+        return webClient.post()
+                .uri(encodedUri)
+                .bodyValue(requestBody)
+                .retrieve()
+                .onStatus(HttpStatusCode::isError, clientResponse ->
+                        clientResponse.bodyToMono(String.class)
+                                .map(AiChatRoomException::new)
+                                .flatMap(Mono::error)
+                )
+                .bodyToMono(Map.class)
+                .map(response -> (String) response.get("response"))
+                .block();
     }
 
     public ChatMessageResList findChatMessages(Long roomId, Pageable pageable) {

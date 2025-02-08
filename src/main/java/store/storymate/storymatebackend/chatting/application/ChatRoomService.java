@@ -21,6 +21,7 @@ import store.storymate.storymatebackend.member.domain.repository.MemberRepositor
 import store.storymate.storymatebackend.member.exception.MemberNotFoundException;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ChatRoomService {
 
@@ -87,7 +88,6 @@ public class ChatRoomService {
     }
 
     // 웹소켓 연결 시 캐릭터 이름을 알아내기 위한 메서드 (service 층에서만 접근 가능)
-    @Transactional
     public String getCharacterName(Long roomId) {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
                 .orElseThrow(ExistsChatRoomException::new);
