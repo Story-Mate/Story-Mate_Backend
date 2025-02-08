@@ -36,8 +36,7 @@ public class SocketHandler extends TextWebSocketHandler {
         String roomId = data[1]; // 채팅방 ID
         String content = data[2]; // 메시지 내용
 
-        String charactersName = chatRoomService.getCharacterName(Long.parseLong(roomId));
-
+        // 1. 메시지 저장
         ChatMessageSaveReqDto chatMessageSaveMemberReqDto = 
                 ChatMessageSaveReqDto.builder()
                         .roomId(roomId)
@@ -45,8 +44,10 @@ public class SocketHandler extends TextWebSocketHandler {
                         .content(content)
                         .build();
 
-        // 1. 메시지 저장
         chatMessageService.saveMessage(chatMessageSaveMemberReqDto);
+
+        // 2. AI 서버에 메시지 보내고 응답 받기
+        String charactersName = chatRoomService.getCharacterName(Long.parseLong(roomId));
 
         ChatMessageSaveReqDto chatMessageAi =
                 ChatMessageSaveReqDto.builder()
@@ -55,9 +56,9 @@ public class SocketHandler extends TextWebSocketHandler {
                         .content(content)
                         .build();
 
-        // 2. AI 서버에 메시지 보내고 응답 받기
         String aiResponse = chatMessageService.callAiApi(chatMessageAi);
 
+        // 3. AI 응답 저장
         ChatMessageSaveReqDto chatMessageSaveAiReqDto =
                 ChatMessageSaveReqDto.builder()
                         .roomId(roomId)
@@ -65,7 +66,6 @@ public class SocketHandler extends TextWebSocketHandler {
                         .content(aiResponse)
                         .build();
 
-        // 3. AI 응답 저장
         chatMessageService.saveMessage(chatMessageSaveAiReqDto);
 
         // 4. 사용자 메시지와 AI 응답을 모두 채팅방에 전송
