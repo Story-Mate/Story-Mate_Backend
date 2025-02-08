@@ -38,3 +38,6 @@ oauth:
 
 server:
   url: http://localhost:8080
+
+ai:
+  characters: ${AI_CHARACTERS_API}
