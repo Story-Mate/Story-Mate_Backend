@@ -12,7 +12,6 @@ import store.storymate.storymatebackend.chatting.api.dto.request.ChatRoomReqDto;
 import store.storymate.storymatebackend.chatting.api.dto.response.ChatRoomResDto;
 import store.storymate.storymatebackend.chatting.api.dto.response.ChatRoomResList;
 import store.storymate.storymatebackend.chatting.application.ChatRoomService;
-import store.storymate.storymatebackend.global.annotation.CurrentMemberEmail;
 import store.storymate.storymatebackend.global.template.ApiResponseTemplate;
 
 @RestController
@@ -24,19 +23,17 @@ public class ChatRoomController implements ChatRoomDocs{
 
     @PostMapping
     public ApiResponseTemplate<ChatRoomResDto> createChatRoom(
-            @CurrentMemberEmail String email,
             @RequestBody ChatRoomReqDto request) {
-        ChatRoomResDto chatRoomResDto = chatRoomService.createChatRoom(email, request);
+        ChatRoomResDto chatRoomResDto = chatRoomService.createChatRoom(request);
 
         return ApiResponseTemplate.created("채팅방 생성", chatRoomResDto);
     }
 
     @GetMapping
     public ApiResponseTemplate<ChatRoomResList> getChatRooms(
-            @CurrentMemberEmail String email,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "10") int size) {
-        ChatRoomResList chatRooms = chatRoomService.getChatRooms(email, PageRequest.of(page, size));
+        ChatRoomResList chatRooms = chatRoomService.getChatRooms(PageRequest.of(page, size));
 
         return ApiResponseTemplate.ok("내 채팅방 조회", chatRooms);
     }
