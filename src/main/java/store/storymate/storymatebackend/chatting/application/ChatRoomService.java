@@ -15,22 +15,20 @@ import store.storymate.storymatebackend.chatting.api.dto.response.ChatRoomResLis
 import store.storymate.storymatebackend.chatting.domain.ChatRoom;
 import store.storymate.storymatebackend.chatting.domain.repository.ChatRoomRepository;
 import store.storymate.storymatebackend.global.domain.Status;
+import store.storymate.storymatebackend.global.util.MemberUtil;
 import store.storymate.storymatebackend.member.domain.Member;
-import store.storymate.storymatebackend.member.domain.repository.MemberRepository;
-import store.storymate.storymatebackend.member.exception.MemberNotFoundException;
 
 @Service
 @RequiredArgsConstructor
 public class ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
-    private final MemberRepository memberRepository;
+    private final MemberUtil memberUtil;
     private final CharactersRepository charactersRepository;
 
     @Transactional
-    public ChatRoomResDto createChatRoom(String email, ChatRoomReqDto chatRoomReqDto) {
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(MemberNotFoundException::new);
+    public ChatRoomResDto createChatRoom(ChatRoomReqDto chatRoomReqDto) {
+        Member member = memberUtil.getCurrentMember();
 
         Characters characters = charactersRepository.findById(chatRoomReqDto.charactersId())
                 .orElseThrow();
@@ -49,17 +47,14 @@ public class ChatRoomService {
                 savedChatRoom.getId(),
                 savedChatRoom.getTitle(),
                 savedChatRoom.getLiking(),
-                member.getName(),
+                member.getOauthInfo().getNickname(),
                 member.getProfileImageUrl(),
                 characters.getName(),
                 characters.getImageUrl());
     }
 
-    @Transactional
-    // TODO: 추후에 작품명도 추가로 제공해줘야 함.
-    public ChatRoomResList getChatRooms(String email, Pageable pageable) {
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(MemberNotFoundException::new);
+    public ChatRoomResList getChatRooms(Pageable pageable) {
+        Member member = memberUtil.getCurrentMember();
 
         Page<ChatRoom> chatRoomPage = chatRoomRepository.findChatRoomsByMember(member, pageable);
 
@@ -68,7 +63,7 @@ public class ChatRoomService {
                         .roomId(chatRoom.getId())
                         .title(chatRoom.getTitle())
                         .liking(chatRoom.getLiking())
-                        .loginUserName(member.getName())
+                        .loginUserName(member.getOauthInfo().getNickname())
                         .memberImage(member.getProfileImageUrl())
                         .charactersName(chatRoom.getCharacters().getName())
                         .charactersImage(chatRoom.getCharacters().getImageUrl())
