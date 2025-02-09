@@ -38,3 +38,8 @@ out/
 
 ### CI/CD ###
 *.env
+
+# QueryDSL Q클래스 Ignore
+/build/generated/
+/src/main/generated/
+
