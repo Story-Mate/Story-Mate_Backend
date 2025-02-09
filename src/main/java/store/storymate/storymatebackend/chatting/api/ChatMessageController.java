@@ -15,7 +15,7 @@ import store.storymate.storymatebackend.global.template.ApiResponseTemplate;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/chat-messages")
-public class ChatMessageController {
+public class ChatMessageController implements ChatMessageDocs{
 
     private final ChatMessageService chatMessageService;
 

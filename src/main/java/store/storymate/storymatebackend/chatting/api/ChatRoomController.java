@@ -17,7 +17,7 @@ import store.storymate.storymatebackend.global.template.ApiResponseTemplate;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/chat-rooms")
-public class ChatRoomController {
+public class ChatRoomController implements ChatRoomDocs{
 
     private final ChatRoomService chatRoomService;
 

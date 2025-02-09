@@ -14,11 +14,13 @@ import store.storymate.storymatebackend.chatting.api.dto.response.ChatRoomResDto
 import store.storymate.storymatebackend.chatting.api.dto.response.ChatRoomResList;
 import store.storymate.storymatebackend.chatting.domain.ChatRoom;
 import store.storymate.storymatebackend.chatting.domain.repository.ChatRoomRepository;
+import store.storymate.storymatebackend.chatting.exception.ExistsChatRoomException;
 import store.storymate.storymatebackend.global.domain.Status;
 import store.storymate.storymatebackend.global.util.MemberUtil;
 import store.storymate.storymatebackend.member.domain.Member;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ChatRoomService {
 
@@ -78,5 +80,13 @@ public class ChatRoomService {
                 .build();
 
         return ChatRoomResList.of(chatRoomResDtos, pageInfoResDto);
+    }
+
+    // 웹소켓 연결 시 캐릭터 이름을 알아내기 위한 메서드 (service 층에서만 접근 가능)
+    public String getCharacterName(Long roomId) {
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+                .orElseThrow(ExistsChatRoomException::new);
+
+        return chatRoom.getCharacters().getName();
     }
 }

@@ -10,7 +10,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
         show_sql: true
@@ -36,3 +36,6 @@ jwt:
 
 server:
   url: http://localhost:8080
+
+ai:
+  characters: ${AI_CHARACTERS_API}

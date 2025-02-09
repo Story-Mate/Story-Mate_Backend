@@ -36,3 +36,6 @@ jwt:
 
 server:
   url: ${PROD_SERVER_URL}
+
+ai:
+  characters: ${AI_CHARACTERS_API}
