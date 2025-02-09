@@ -50,7 +50,7 @@ jobs:
       - name: Update docker-compose image tag
         run: |
           IMAGE_TAG=${{ github.sha }}
-          sed -i "s|image: storymate/be:latest|image: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/storymate/be:$IMAGE_TAG|g" deploy/docker-compose.dev.yml
+          sed -i "s|image: storymate/be:latest|image: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/storymate/be:$IMAGE_TAG|g" deploy/dev/docker-compose.yml
 
       # .env 파일 생성
       - name: Write .env file from secret
@@ -82,8 +82,8 @@ jobs:
             # .env 파일 내 CR 문자 제거
             sed -i 's/\r//' .env
             # 기존 컨테이너 종료 (실행중이 없으면 에러 무시)
-            docker compose -f docker-compose.dev.yml down || true
+            docker compose down || true
             # 최신 이미지 pull (docker-compose.yml 내에 태그가 업데이트 되어 있어야 함)
-            docker compose -f docker-compose.dev.yml pull
+            docker compose pull
             # 컨테이너 백그라운드 실행
-            docker compose -f docker-compose.dev.yml up -d
+            docker compose up -d
