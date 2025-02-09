@@ -55,8 +55,8 @@ jobs:
       # .env 파일 생성
       - name: Write .env file from secret
         run: |
-          echo "${{ secrets.ENV_FILE }}" > ./deploy/.env
-          [ -f "deploy/.env" ] && echo ".env 생성 완료" || echo ".env 생성 실패"
+          echo "${{ secrets.ENV_FILE }}" > ./deploy/dev/.env
+          [ -f "deploy/dev/.env" ] && echo ".env 생성 완료" || echo ".env 생성 실패"
           
       # EC2로 docker-compose, .env 파일 복사 (scp 액션 사용)
       - name: Copy docker-compose file to EC2
@@ -66,7 +66,7 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
-          source: "deploy/docker-compose.dev.yml,deploy/.env"
+          source: "deploy/dev/docker-compose.yml,deploy/dev/.env"
           target: "/home/${{ secrets.EC2_USER }}/"
 
       # EC2에 접속해 docker-compose를 통한 배포 실행
@@ -78,7 +78,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           script: |
-            cd /home/${{ secrets.EC2_USER }}/deploy
+            cd /home/${{ secrets.EC2_USER }}/deploy/dev
             # .env 파일 내 CR 문자 제거
             sed -i 's/\r//' .env
             # 기존 컨테이너 종료 (실행중이 없으면 에러 무시)
