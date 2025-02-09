@@ -33,7 +33,7 @@ public class QCharacters extends EntityPathBase<Characters> {
 
     public final StringPath imageUrl = createString("imageUrl");
 
-    public final StringPath like_count = createString("like_count");
+    public final NumberPath<Integer> like_count = createNumber("like_count", Integer.class);
 
     public final StringPath name = createString("name");
 

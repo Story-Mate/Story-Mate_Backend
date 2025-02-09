@@ -6,13 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import store.storymate.storymatebackend.auth.api.dto.request.RefreshTokenRequestDto;
-import store.storymate.storymatebackend.auth.api.dto.request.TokenRequestDto;
-import store.storymate.storymatebackend.auth.api.dto.response.IdTokenResponseDto;
 import store.storymate.storymatebackend.chatting.api.dto.response.ChatMessageResList;
-import store.storymate.storymatebackend.global.jwt.api.dto.TokenDto;
 import store.storymate.storymatebackend.global.template.ApiResponseTemplate;
 
 
