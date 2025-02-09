@@ -55,7 +55,7 @@ public class QChatRoom extends EntityPathBase<ChatRoom> {
     public QChatRoom(Class<? extends ChatRoom> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.characters = inits.isInitialized("characters") ? new store.storymate.storymatebackend.characters.domain.QCharacters(forProperty("characters")) : null;
-        this.member = inits.isInitialized("member") ? new store.storymate.storymatebackend.member.domain.QMember(forProperty("member")) : null;
+        this.member = inits.isInitialized("member") ? new store.storymate.storymatebackend.member.domain.QMember(forProperty("member"), inits.get("member")) : null;
     }
 
 }
