@@ -36,7 +36,7 @@ jobs:
       - name: Build Docker Image
         run: |
           IMAGE_TAG=${{ github.sha }}
-          docker build -f deploy/dev.dockerfile -t storymate/be:$IMAGE_TAG .
+          docker build -f deploy/dev/Dockerfile -t storymate/be:$IMAGE_TAG .
           docker tag storymate/be:$IMAGE_TAG ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/storymate/be:$IMAGE_TAG
 
       # Docker 이미지를 AWS ECR에 푸시
