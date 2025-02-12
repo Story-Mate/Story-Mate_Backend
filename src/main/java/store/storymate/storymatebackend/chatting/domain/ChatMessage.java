@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Column;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +27,7 @@ public class ChatMessage {
 
     private String sender;
 
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     @CreationTimestamp
