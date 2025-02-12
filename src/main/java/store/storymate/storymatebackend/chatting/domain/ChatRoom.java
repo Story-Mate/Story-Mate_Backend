@@ -9,6 +9,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Builder;
@@ -27,6 +29,7 @@ public class ChatRoom {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
     private Status status;
 
     private String title;
