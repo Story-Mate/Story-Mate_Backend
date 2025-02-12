@@ -7,9 +7,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import store.storymate.storymatebackend.global.domain.BaseEntity;
+import store.storymate.storymatebackend.member.domain.Member;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -23,15 +25,15 @@ public class MemberBook extends BaseEntity {
     @JoinColumn(name = "book_id", nullable = false)
     private Book book;
 
-//    @ManyToOne
-//    @JoinColumn(name = "member_id", nullable = false)
-//    private Member member;
+    @ManyToOne
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
 
     private Float progress;
 
-//    @Builder
-//    public MemberBook(Book book, Member member) {
-//        this.book = book;
-//        this.member = member;
-//    }
+    @Builder
+    public MemberBook(Book book, Member member) {
+        this.book = book;
+        this.member = member;
+    }
 }

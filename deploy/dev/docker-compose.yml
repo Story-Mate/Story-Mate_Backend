@@ -22,6 +22,8 @@ services:
       - JWT_REFRESH_TOKEN_EXPIRATION_TIME=${JWT_REFRESH_TOKEN_EXPIRATION_TIME}
       - JWT_ACCESS_TOKEN_SECRET=${JWT_ACCESS_TOKEN_SECRET}
       - JWT_REFRESH_TOKEN_SECRET=${JWT_REFRESH_TOKEN_SECRET}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
     networks:
       - db-connection
     depends_on:
@@ -50,6 +52,7 @@ services:
       - ~/docker/mariadb/etc/mysql/conf.d:/etc/mysql/conf.d:ro
       - ~/docker/mariadb/var/lib/mysql:/var/lib/mysql
       - ~/docker/mariadb/var/log/maria:/var/log/maria
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - db-connection
     healthcheck:
@@ -57,7 +60,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-  redis:
+  cache:
     container_name: storymate-cache
     image: redis:7.2-alpine
     ports:
