@@ -78,6 +78,9 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           script: |
+            # AWS CLI 설정
+            export AWS_PROFILE=github-action
+            # 작업 위치로 이동 
             cd /home/${{ secrets.EC2_USER }}/deploy/dev
             # .env 파일 내 CR 문자 제거
             sed -i 's/\r//' .env

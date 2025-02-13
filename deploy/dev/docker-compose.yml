@@ -24,6 +24,7 @@ services:
       - JWT_REFRESH_TOKEN_SECRET=${JWT_REFRESH_TOKEN_SECRET}
       - REDIS_HOST=${REDIS_HOST}
       - REDIS_PORT=${REDIS_PORT}
+      - DEV_SERVER_URL=${DEV_SERVER_URL}
     networks:
       - db-connection
     depends_on:
