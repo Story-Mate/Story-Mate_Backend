@@ -35,7 +35,7 @@ jwt:
   refresh-token-expiration-time: ${JWT_REFRESH_TOKEN_EXPIRATION_TIME}
 
 server:
-  url: http://localhost:8080
+  url: ${DEV_SERVER_URL}
 
 ai:
   characters: ${AI_CHARACTERS_API}
