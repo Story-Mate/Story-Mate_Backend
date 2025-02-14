@@ -34,6 +34,6 @@ public class BookServiceImpl implements BookService {
     public BookDetailResponse getBookDetails(Long bookId) {
         return bookRepository.findById(bookId)
                 .map(BookDetailResponse::fromEntity)
-                .orElseThrow(() -> new BookNotFoundException("해당하는 책을 찾을 수 없습니다."));
+                .orElseThrow(BookNotFoundException::new);
     }
 }
