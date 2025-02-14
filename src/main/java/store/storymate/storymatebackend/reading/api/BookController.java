@@ -1,4 +1,4 @@
-package store.storymate.storymatebackend.reading.api.controller;
+package store.storymate.storymatebackend.reading.api;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -35,8 +35,8 @@ public class BookController implements BookDocs {
     }
 
     @Override
-    @GetMapping("/{id}")
-    public ApiResponseTemplate<BookDetailResponse> getBookDetails(@PathVariable("id") Long bookId) {
+    @GetMapping("/{bookId}")
+    public ApiResponseTemplate<BookDetailResponse> getBookDetails(@PathVariable("bookId") Long bookId) {
         BookDetailResponse bookDetails = bookService.getBookDetails(bookId);
         return ApiResponseTemplate.ok("책 상세 조회 성공", bookDetails);
     }

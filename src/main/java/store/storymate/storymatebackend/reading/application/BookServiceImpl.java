@@ -6,10 +6,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import store.storymate.storymatebackend.reading.api.dto.PageInfoDto;
-import store.storymate.storymatebackend.reading.api.dto.BookCriteria;
 import store.storymate.storymatebackend.reading.api.dto.response.BookDetailResponse;
 import store.storymate.storymatebackend.reading.api.dto.response.BookResponse;
 import store.storymate.storymatebackend.reading.api.dto.response.BookResponseList;
+import store.storymate.storymatebackend.reading.application.dto.BookCriteria;
 import store.storymate.storymatebackend.reading.domain.Book;
 import store.storymate.storymatebackend.reading.domain.repository.BookRepository;
 import store.storymate.storymatebackend.reading.exception.BookNotFoundException;
@@ -34,6 +34,6 @@ public class BookServiceImpl implements BookService {
     public BookDetailResponse getBookDetails(Long bookId) {
         return bookRepository.findById(bookId)
                 .map(BookDetailResponse::fromEntity)
-                .orElseThrow(() -> new BookNotFoundException("해당하는 책을 찾을 수 없습니다."));
+                .orElseThrow(BookNotFoundException::new);
     }
 }

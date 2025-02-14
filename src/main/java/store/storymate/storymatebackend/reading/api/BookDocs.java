@@ -1,4 +1,4 @@
-package store.storymate.storymatebackend.reading.api.controller;
+package store.storymate.storymatebackend.reading.api;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
