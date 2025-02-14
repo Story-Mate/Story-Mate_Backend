@@ -1,6 +1,8 @@
-package store.storymate.storymatebackend.reading.api.dto;
+package store.storymate.storymatebackend.reading.application.dto;
 
 import lombok.Getter;
+import store.storymate.storymatebackend.reading.api.dto.SearchType;
+import store.storymate.storymatebackend.reading.api.dto.SortType;
 import store.storymate.storymatebackend.reading.domain.Genre;
 
 @Getter
