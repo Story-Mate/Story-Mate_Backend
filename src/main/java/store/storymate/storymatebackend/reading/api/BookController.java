@@ -1,4 +1,4 @@
-package store.storymate.storymatebackend.reading.api.controller;
+package store.storymate.storymatebackend.reading.api;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
