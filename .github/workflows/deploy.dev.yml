@@ -80,6 +80,7 @@ jobs:
           script: |
             # AWS CLI 설정
             export AWS_PROFILE=github-action
+            aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
             # 작업 위치로 이동 
             cd /home/${{ secrets.EC2_USER }}/deploy/dev
             # .env 파일 내 CR 문자 제거
