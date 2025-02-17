@@ -11,7 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
+import store.storymate.storymatebackend.quiz.api.dto.request.QuizAnswerReqDto;
 import store.storymate.storymatebackend.quiz.api.dto.request.QuizQuestionReqDto;
+import store.storymate.storymatebackend.quiz.api.dto.response.QuizAnswerResDto;
+import store.storymate.storymatebackend.quiz.api.dto.response.QuizQuestionResDto;
 import store.storymate.storymatebackend.quiz.exception.AiQuizQuestionException;
 
 @Service
@@ -32,7 +35,7 @@ public class QuizService {
     }
 
     // AI 문제 받는 기능
-    public String callAiQuestionApi(QuizQuestionReqDto quizQuestionReqDto) {
+    public QuizQuestionResDto callAiQuestionApi(QuizQuestionReqDto quizQuestionReqDto) {
         Map<String, String> requestBody = new HashMap<>();
         requestBody.put("character_name", quizQuestionReqDto.characterName());
         requestBody.put("question_number", quizQuestionReqDto.questionNumber());
@@ -52,8 +55,30 @@ public class QuizService {
                                 .flatMap(Mono::error)
                 )
                 .bodyToMono(Map.class)
-                .map(response -> (String) response.get("response"))
+                .map(response -> new QuizQuestionResDto((String) response.get("response")))
                 .block();
     }
+
     // AI 답변 받는 기능
+    public QuizAnswerResDto callAiAnswerApi(QuizAnswerReqDto quizQuestionReqDto) {
+        Map<String, String> requestBody = new HashMap<>();
+        requestBody.put("chatting", quizQuestionReqDto.chatting());
+
+        String encodedUri = UriComponentsBuilder.fromPath("/")
+                .encode()
+                .toUriString();
+
+        return webClient.post()
+                .uri(encodedUri)
+                .bodyValue(requestBody)
+                .retrieve()
+                .onStatus(HttpStatusCode::isError, clientResponse ->
+                        clientResponse.bodyToMono(String.class)
+                                .map(AiQuizQuestionException::new)
+                                .flatMap(Mono::error)
+                )
+                .bodyToMono(Map.class)
+                .map(response -> new QuizAnswerResDto((String) response.get("response")))
+                .block();
+    }
 }
