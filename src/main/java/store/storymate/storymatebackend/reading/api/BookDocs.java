@@ -61,7 +61,7 @@ public interface BookDocs {
             summary = "감상 중인 작품 목록 조회",
             description = "현재 사용자가 감상 중인 작품 목록을 반환합니다.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "읽는 중인 책 목록 조회 성공",
+                    @ApiResponse(responseCode = "200", description = "감상 중인 작품 목록 조회 성공",
                             content = @Content(schema = @Schema(implementation = BookResponseList.class))),
                     @ApiResponse(responseCode = "400", description = "잘못된 요청"),
                     @ApiResponse(responseCode = "500", description = "서버 오류")
@@ -73,7 +73,7 @@ public interface BookDocs {
             summary = "감상한 작품 목록 조회",
             description = "현재 사용자가 감상한 작품 목록을 반환합니다.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "다 읽은 책 목록 조회 성공",
+                    @ApiResponse(responseCode = "200", description = "감상한 작품 목록 조회 성공",
                             content = @Content(schema = @Schema(implementation = BookResponseList.class))),
                     @ApiResponse(responseCode = "400", description = "잘못된 요청"),
                     @ApiResponse(responseCode = "500", description = "서버 오류")

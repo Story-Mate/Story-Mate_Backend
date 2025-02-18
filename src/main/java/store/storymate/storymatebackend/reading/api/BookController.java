@@ -60,7 +60,7 @@ public class BookController implements BookDocs {
             Pageable pageable
     ) {
         BookResponseList readingBooks = memberBookService.getReadingBooks(pageable);
-        return ApiResponseTemplate.ok("읽는 중인 작품 목록 조회 성공", readingBooks);
+        return ApiResponseTemplate.ok("감상 중인 작품 목록 조회 성공", readingBooks);
     }
 
     @Override
@@ -69,6 +69,6 @@ public class BookController implements BookDocs {
             Pageable pageable
     ) {
         BookResponseList finishedBooks = memberBookService.getFinishedBooks(pageable);
-        return ApiResponseTemplate.ok("완독한 작품 목록 조회 성공", finishedBooks);
+        return ApiResponseTemplate.ok("감상한 작품 목록 조회 성공", finishedBooks);
     }
 }
