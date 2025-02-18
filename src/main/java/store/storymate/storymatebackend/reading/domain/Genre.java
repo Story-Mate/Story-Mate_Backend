@@ -15,9 +15,9 @@ public enum Genre {
 
     private final String kor;
 
-    public static Genre of(String name) {
+    public static Genre of(String requestGenre) {
         return Arrays.stream(values())
-                .filter(genre -> genre.name().equalsIgnoreCase(name))
+                .filter(genre -> genre.name().equalsIgnoreCase(requestGenre))
                 .findFirst()
                 .orElse(NONE);
     }

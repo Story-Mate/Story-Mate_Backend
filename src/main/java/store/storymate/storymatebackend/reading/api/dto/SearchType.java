@@ -23,7 +23,7 @@ public enum SearchType {
                 .orElse(ALL.getField());
     }
 
-    public static SearchType getSearchType(String requestedSearchType) {
+    public static SearchType of(String requestedSearchType) {
         return Arrays.stream(values())
                 .filter(searchType -> searchType.name().equalsIgnoreCase(requestedSearchType))
                 .findFirst()

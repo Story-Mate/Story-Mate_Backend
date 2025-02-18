@@ -14,7 +14,7 @@ import store.storymate.storymatebackend.reading.api.dto.response.BookResponseLis
 import store.storymate.storymatebackend.reading.application.BookService;
 import store.storymate.storymatebackend.reading.application.MemberBookService;
 import store.storymate.storymatebackend.reading.application.RecommendationService;
-import store.storymate.storymatebackend.reading.application.dto.BookCriteria;
+import store.storymate.storymatebackend.reading.api.dto.BookCriteria;
 
 @RestController
 @RequestMapping("/api/books")

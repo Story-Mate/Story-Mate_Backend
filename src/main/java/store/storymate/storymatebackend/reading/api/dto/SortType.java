@@ -23,7 +23,7 @@ public enum SortType {
                 .orElse(NONE.getField());
     }
 
-    public static SortType getSortType(String requestedSortType) {
+    public static SortType of(String requestedSortType) {
         return Arrays.stream(values())
                 .filter(sortType -> sortType.name().equalsIgnoreCase(requestedSortType))
                 .findFirst()
