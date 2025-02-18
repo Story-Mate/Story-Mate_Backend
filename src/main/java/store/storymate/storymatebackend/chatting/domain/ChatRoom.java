@@ -19,6 +19,7 @@ import lombok.NoArgsConstructor;
 import store.storymate.storymatebackend.characters.domain.Characters;
 import store.storymate.storymatebackend.global.domain.Status;
 import store.storymate.storymatebackend.member.domain.Member;
+import store.storymate.storymatebackend.reading.domain.Book;
 
 @Entity
 @Getter
@@ -47,12 +48,17 @@ public class ChatRoom {
     @JoinColumn(name = "characters_id", nullable = false)
     private Characters characters;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "book_id", nullable = false)
+    private Book book;
+
     @Builder
-    public ChatRoom(Status status, String title, Integer liking, Member member, Characters characters) {
+    public ChatRoom(Status status, String title, Integer liking, Member member, Characters characters, Book book) {
         this.status = status;
         this.title = title;
         this.liking = liking;
         this.member = member;
         this.characters = characters;
+        this.book = book;
     }
 }

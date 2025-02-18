@@ -15,6 +15,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import store.storymate.storymatebackend.reading.domain.Book;
 
 @Entity
 @Getter

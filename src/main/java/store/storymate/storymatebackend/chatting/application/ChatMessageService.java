@@ -27,6 +27,9 @@ import store.storymate.storymatebackend.chatting.domain.repository.ChatMessageRe
 import store.storymate.storymatebackend.chatting.domain.repository.ChatRoomRepository;
 import store.storymate.storymatebackend.chatting.exception.AiChatRoomException;
 import store.storymate.storymatebackend.chatting.exception.ExistsChatRoomException;
+import store.storymate.storymatebackend.reading.domain.Book;
+import store.storymate.storymatebackend.reading.domain.repository.BookRepository;
+import store.storymate.storymatebackend.reading.exception.BookNotFoundException;
 
 @Service
 @Transactional(readOnly = true)
@@ -35,6 +38,7 @@ public class ChatMessageService {
 
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageRepository chatMessageRepository;
+    private final BookRepository bookRepository;
     private WebClient webClient;
 
     @Value("${ai.characters}")
@@ -67,6 +71,7 @@ public class ChatMessageService {
         requestBody.put("session_id", chatMessageSaveReqDto.roomId());
         requestBody.put("character_name", chatMessageSaveReqDto.sender());
         requestBody.put("query", chatMessageSaveReqDto.content());
+        requestBody.put("book_title", chatMessageSaveReqDto.bookTitle());
 
         String encodedUri = UriComponentsBuilder.fromPath("/")
                 .encode()
