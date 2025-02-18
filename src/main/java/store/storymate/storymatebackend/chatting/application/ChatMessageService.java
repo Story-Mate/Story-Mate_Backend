@@ -56,14 +56,11 @@ public class ChatMessageService {
         ChatRoom chatRoom = chatRoomRepository.findById(Long.parseLong(chatMessageSaveReqDto.roomId()))
                 .orElseThrow(ExistsChatRoomException::new);
 
-        Book book = bookRepository.findBookByTitle(chatMessageSaveReqDto.bookTitle()).orElseThrow();
-
         ChatMessage chatMessage = ChatMessage.builder()
                 .sender(chatMessageSaveReqDto.sender())
                 .content(chatMessageSaveReqDto.content())
                 .timestamp(LocalDateTime.now())
                 .chatRoom(chatRoom)
-                .book(book)
                 .build();
 
         chatMessageRepository.save(chatMessage);

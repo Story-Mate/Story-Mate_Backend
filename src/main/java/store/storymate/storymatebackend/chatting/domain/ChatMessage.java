@@ -38,16 +38,11 @@ public class ChatMessage {
     @JoinColumn(name = "chat_room_id", nullable = false)
     private ChatRoom chatRoom;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "book_id", nullable = false)
-    private Book book;
-
     @Builder
-    public ChatMessage(String sender, String content, ChatRoom chatRoom, LocalDateTime timestamp, Book book) {
+    public ChatMessage(String sender, String content, ChatRoom chatRoom, LocalDateTime timestamp) {
         this.sender = sender;
         this.content = content;
         this.chatRoom = chatRoom;
         this.timestamp = timestamp;
-        this.book = book;
     }
 }

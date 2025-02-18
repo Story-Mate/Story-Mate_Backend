@@ -43,7 +43,6 @@ public class SocketHandler extends TextWebSocketHandler {
                         .roomId(roomId)
                         .sender(sender)
                         .content(content)
-                        .bookTitle(bookTitle)
                         .build();
 
         chatMessageService.saveMessage(chatMessageSaveMemberReqDto);
@@ -67,7 +66,6 @@ public class SocketHandler extends TextWebSocketHandler {
                         .roomId(roomId)
                         .sender(charactersName)
                         .content(aiResponse)
-                        .bookTitle(bookTitle)
                         .build();
 
         chatMessageService.saveMessage(chatMessageSaveAiReqDto);
