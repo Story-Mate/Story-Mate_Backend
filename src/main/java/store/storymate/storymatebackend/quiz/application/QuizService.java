@@ -60,7 +60,10 @@ public class QuizService {
     // AI 답변 받는 기능
     public QuizAnswerResDto callAiAnswerApi(QuizAnswerReqDto quizQuestionReqDto) {
         Map<String, String> requestBody = new HashMap<>();
-        requestBody.put("chatting", quizQuestionReqDto.chatting());
+        requestBody.put("book_title", quizQuestionReqDto.bookTitle());
+        requestBody.put("character_name", quizQuestionReqDto.characterName());
+        requestBody.put("quiz_type", quizQuestionReqDto.quizType());
+        requestBody.put("user_answer", quizQuestionReqDto.userAnswer());
 
         String encodedUri = UriComponentsBuilder.fromPath("/evaluate_quiz")
                 .encode()
@@ -75,8 +78,7 @@ public class QuizService {
                                 .map(AiQuizQuestionException::new)
                                 .flatMap(Mono::error)
                 )
-                .bodyToMono(Map.class)
-                .map(response -> new QuizAnswerResDto((String) response.get("response")))
+                .bodyToMono(QuizAnswerResDto.class)
                 .block();
     }
 }
