@@ -92,5 +92,9 @@ public class AuthService {
         }
     }
 
+    public void logout() {
+        Member member = memberUtil.getCurrentMember();
+        member.updateStatus(Status.INACTIVE);
+    }
 }
 
