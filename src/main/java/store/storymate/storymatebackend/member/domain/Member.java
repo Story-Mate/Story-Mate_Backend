@@ -34,6 +34,8 @@ public class Member extends BaseEntity {
 
     private int age;
 
+    private LocalDate birthDate;
+
     @Column(name = "profile_image_url")
     private String profileImageUrl;
 
@@ -78,9 +80,9 @@ public class Member extends BaseEntity {
                 .build();
     }
 
-    private static int calculateAgeFromBirthYear(String birthYear) {
+    private static int calculateAgeFromBirthYear(String birthDate) {
         int currentYear = LocalDate.now().getYear();
-        int birthYearInt = Integer.parseInt(birthYear);
+        int birthYearInt = LocalDate.of(Integer.parseInt(birthDate), 1, 1).getYear();
 
         return currentYear - birthYearInt;
     }
@@ -91,5 +93,10 @@ public class Member extends BaseEntity {
 
     public void updateStatus(Status status) {
         this.status = status;
+    }
+
+    public void updateBirthDate(String birthDate) {
+        this.birthDate = LocalDate.of(Integer.parseInt(birthDate), 1, 1);
+        this.age = calculateAgeFromBirthYear(birthDate);
     }
 }
