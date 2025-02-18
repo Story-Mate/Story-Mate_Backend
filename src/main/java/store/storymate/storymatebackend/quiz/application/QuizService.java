@@ -38,10 +38,9 @@ public class QuizService {
     public QuizQuestionResDto callAiQuestionApi(QuizQuestionReqDto quizQuestionReqDto) {
         Map<String, String> requestBody = new HashMap<>();
         requestBody.put("character_name", quizQuestionReqDto.characterName());
-        requestBody.put("question_number", quizQuestionReqDto.questionNumber());
-        requestBody.put("novel_title", quizQuestionReqDto.novelTitle());
+        requestBody.put("quiz_type", quizQuestionReqDto.quizType());
 
-        String encodedUri = UriComponentsBuilder.fromPath("/")
+        String encodedUri = UriComponentsBuilder.fromPath("/quiz_question")
                 .encode()
                 .toUriString();
 
@@ -54,8 +53,7 @@ public class QuizService {
                                 .map(AiQuizQuestionException::new)
                                 .flatMap(Mono::error)
                 )
-                .bodyToMono(Map.class)
-                .map(response -> new QuizQuestionResDto((String) response.get("response")))
+                .bodyToMono(QuizQuestionResDto.class)
                 .block();
     }
 
@@ -64,7 +62,7 @@ public class QuizService {
         Map<String, String> requestBody = new HashMap<>();
         requestBody.put("chatting", quizQuestionReqDto.chatting());
 
-        String encodedUri = UriComponentsBuilder.fromPath("/")
+        String encodedUri = UriComponentsBuilder.fromPath("/evaluate_quiz")
                 .encode()
                 .toUriString();
 

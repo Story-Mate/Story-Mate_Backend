@@ -25,16 +25,17 @@ public class SocketHandler extends TextWebSocketHandler {
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String payload = message.getPayload();
-        String[] data = payload.split(":", 3); // ":" 기준으로 메시지 분리 (sender:roomId:content)
+        String[] data = payload.split(":", 4); // ":" 기준으로 메시지 분리 (sender:roomId:content)
 
-        if (data.length < 3) {
+        if (data.length < 4) {
             session.sendMessage(new TextMessage("Invalid message format. Use 'sender:roomId:message' format."));
             return;
         }
 
         String sender = data[0]; // 발신자
         String roomId = data[1]; // 채팅방 ID
-        String content = data[2]; // 메시지 내용
+        String bookTitle = data[2]; // 책 제목
+        String content = data[3]; // 메시지 내용
 
         // 1. 메시지 저장
         ChatMessageSaveReqDto chatMessageSaveMemberReqDto = 
@@ -42,6 +43,7 @@ public class SocketHandler extends TextWebSocketHandler {
                         .roomId(roomId)
                         .sender(sender)
                         .content(content)
+                        .bookTitle(bookTitle)
                         .build();
 
         chatMessageService.saveMessage(chatMessageSaveMemberReqDto);
@@ -54,6 +56,7 @@ public class SocketHandler extends TextWebSocketHandler {
                         .roomId(roomId)
                         .sender(charactersName)
                         .content(content)
+                        .bookTitle(bookTitle)
                         .build();
 
         String aiResponse = chatMessageService.callAiApi(chatMessageAi);
@@ -64,6 +67,7 @@ public class SocketHandler extends TextWebSocketHandler {
                         .roomId(roomId)
                         .sender(charactersName)
                         .content(aiResponse)
+                        .bookTitle(bookTitle)
                         .build();
 
         chatMessageService.saveMessage(chatMessageSaveAiReqDto);

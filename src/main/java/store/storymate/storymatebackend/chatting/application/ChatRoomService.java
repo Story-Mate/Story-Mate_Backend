@@ -18,6 +18,8 @@ import store.storymate.storymatebackend.chatting.exception.ExistsChatRoomExcepti
 import store.storymate.storymatebackend.global.domain.Status;
 import store.storymate.storymatebackend.global.util.MemberUtil;
 import store.storymate.storymatebackend.member.domain.Member;
+import store.storymate.storymatebackend.reading.domain.Book;
+import store.storymate.storymatebackend.reading.domain.repository.BookRepository;
 
 @Service
 @Transactional(readOnly = true)
@@ -27,6 +29,7 @@ public class ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
     private final MemberUtil memberUtil;
     private final CharactersRepository charactersRepository;
+    private final BookRepository bookRepository;
 
     @Transactional
     public ChatRoomResDto createChatRoom(ChatRoomReqDto chatRoomReqDto) {
@@ -35,12 +38,16 @@ public class ChatRoomService {
         Characters characters = charactersRepository.findById(chatRoomReqDto.charactersId())
                 .orElseThrow();
 
+        Book book = bookRepository.findBookByTitle(chatRoomReqDto.bookTitle())
+                .orElseThrow();
+
         ChatRoom chatRoom = ChatRoom.builder()
                 .status(Status.ACTIVE)
                 .title(chatRoomReqDto.title())
                 .liking(0)
                 .member(member)
                 .characters(characters)
+                .book(book)
                 .build();
 
         ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom);
@@ -52,7 +59,8 @@ public class ChatRoomService {
                 member.getOauthInfo().getNickname(),
                 member.getProfileImageUrl(),
                 characters.getName(),
-                characters.getImageUrl());
+                characters.getImageUrl(),
+                book.getTitle());
     }
 
     public ChatRoomResList getChatRooms(Pageable pageable) {
@@ -69,6 +77,7 @@ public class ChatRoomService {
                         .memberImage(member.getProfileImageUrl())
                         .charactersName(chatRoom.getCharacters().getName())
                         .charactersImage(chatRoom.getCharacters().getImageUrl())
+                        .bookTitle(chatRoom.getBook().getTitle())
                         .build()
                 )
                 .toList();

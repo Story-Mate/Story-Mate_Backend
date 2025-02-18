@@ -2,7 +2,6 @@ package store.storymate.storymatebackend.quiz.api.dto.request;
 
 public record QuizQuestionReqDto(
         String characterName,
-        String questionNumber,
-        String novelTitle
+        String quizType
 ) {
 }

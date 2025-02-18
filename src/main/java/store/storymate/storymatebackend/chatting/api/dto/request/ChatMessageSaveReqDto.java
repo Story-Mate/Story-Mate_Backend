@@ -3,18 +3,13 @@ package store.storymate.storymatebackend.chatting.api.dto.request;
 import lombok.Builder;
 import store.storymate.storymatebackend.chatting.domain.ChatMessage;
 import store.storymate.storymatebackend.chatting.domain.ChatRoom;
+import store.storymate.storymatebackend.reading.domain.Book;
 
 @Builder
 public record ChatMessageSaveReqDto(
         String roomId,
         String sender,
-        String content
+        String content,
+        String bookTitle
 ) {
-    public static ChatMessage toEntity(ChatRoom chatRoom, String sender, String content) {
-        return ChatMessage.builder()
-                .chatRoom(chatRoom)
-                .sender(sender)
-                .content(content)
-                .build();
-    }
 }

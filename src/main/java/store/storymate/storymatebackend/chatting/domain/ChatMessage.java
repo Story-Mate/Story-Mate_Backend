@@ -15,6 +15,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import store.storymate.storymatebackend.reading.domain.Book;
 
 @Entity
 @Getter
@@ -37,11 +38,16 @@ public class ChatMessage {
     @JoinColumn(name = "chat_room_id", nullable = false)
     private ChatRoom chatRoom;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "book_id", nullable = false)
+    private Book book;
+
     @Builder
-    public ChatMessage(String sender, String content, ChatRoom chatRoom, LocalDateTime timestamp) {
+    public ChatMessage(String sender, String content, ChatRoom chatRoom, LocalDateTime timestamp, Book book) {
         this.sender = sender;
         this.content = content;
         this.chatRoom = chatRoom;
         this.timestamp = timestamp;
+        this.book = book;
     }
 }
