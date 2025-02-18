@@ -14,8 +14,8 @@ public class BookCriteria {
 
     public BookCriteria(String query, String searchType, String genre, String sortType) {
         this.query = query;
-        this.searchType = SearchType.valueOf(searchType);
+        this.searchType = SearchType.getSearchType(searchType);
         this.genre = Genre.valueOf(genre);
-        this.sortType = SortType.valueOf(sortType);
+        this.sortType = SortType.getSortType(sortType);
     }
 }

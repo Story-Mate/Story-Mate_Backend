@@ -22,4 +22,11 @@ public enum SortType {
                 .map(SortType::getField)
                 .orElse(NONE.getField());
     }
+
+    public static SortType getSortType(String requestedSortType) {
+        return Arrays.stream(values())
+                .filter(sortType -> sortType.name().equalsIgnoreCase(requestedSortType))
+                .findFirst()
+                .orElse(NONE);
+    }
 }
