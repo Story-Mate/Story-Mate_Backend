@@ -12,6 +12,6 @@ public class SearchStrategyFactory {
     );
 
     public static SearchStrategy getStrategy(SearchType searchType) {
-        return STRATEGY_MAP.getOrDefault(searchType, new TitleSearchStrategy()); // 기본값 TITLE
+        return STRATEGY_MAP.getOrDefault(searchType, new AllSearchStrategy()); 
     }
 }

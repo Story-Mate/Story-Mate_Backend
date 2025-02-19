@@ -34,8 +34,6 @@ public class Member extends BaseEntity {
 
     private int age;
 
-    private LocalDate birthDate;
-
     @Column(name = "profile_image_url")
     private String profileImageUrl;
 
@@ -50,6 +48,9 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Status status;
 
+    @Column(name = "birth_date")
+    private LocalDate birthDate;
+
     @Builder(access = AccessLevel.PRIVATE)
     private Member(OauthInfo oauthInfo, String nickname, MemberRole memberRole, int age,
                    String profileImageUrl, Long messageCount, String inviteCode, Status status) {
@@ -60,6 +61,7 @@ public class Member extends BaseEntity {
         this.messageCount = messageCount;
         this.inviteCode = inviteCode;
         this.status = status;
+        this.birthDate = null;
     }
 
     public static Member createMember(OAuthProvider oAuthProvider,
@@ -80,13 +82,6 @@ public class Member extends BaseEntity {
                 .build();
     }
 
-    private static int calculateAgeFromBirthYear(String birthDate) {
-        int currentYear = LocalDate.now().getYear();
-        int birthYearInt = LocalDate.of(Integer.parseInt(birthDate), 1, 1).getYear();
-
-        return currentYear - birthYearInt;
-    }
-
     public void updateLastLoginAt() {
         this.lastLoginAt = LocalDateTime.now();
     }
@@ -95,8 +90,7 @@ public class Member extends BaseEntity {
         this.status = status;
     }
 
-    public void updateBirthDate(String birthDate) {
-        this.birthDate = LocalDate.of(Integer.parseInt(birthDate), 1, 1);
-        this.age = calculateAgeFromBirthYear(birthDate);
+    public void updateBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
     }
 }
