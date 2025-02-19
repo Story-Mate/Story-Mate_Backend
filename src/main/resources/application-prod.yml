@@ -39,3 +39,7 @@ server:
 
 ai:
   characters: ${AI_CHARACTERS_API}
+
+reading:
+  completion:
+    threshold: 98

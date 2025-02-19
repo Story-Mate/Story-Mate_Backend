@@ -14,7 +14,7 @@ import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 import store.storymate.storymatebackend.reading.api.dto.SearchType;
 import store.storymate.storymatebackend.reading.api.dto.SortType;
-import store.storymate.storymatebackend.reading.application.dto.BookCriteria;
+import store.storymate.storymatebackend.reading.api.dto.BookCriteria;
 import store.storymate.storymatebackend.reading.domain.Book;
 import store.storymate.storymatebackend.reading.domain.Genre;
 import store.storymate.storymatebackend.reading.domain.QBook;

@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.RequestParam;
 import store.storymate.storymatebackend.global.template.ApiResponseTemplate;
@@ -12,6 +13,7 @@ import store.storymate.storymatebackend.reading.api.dto.response.BookDetailRespo
 import store.storymate.storymatebackend.reading.api.dto.response.BookRecommendResponse;
 import store.storymate.storymatebackend.reading.api.dto.response.BookResponseList;
 
+@Tag(name = "[작품 조회 API]", description = "작품 관련 API")
 public interface BookDocs {
     @Operation(
             summary = "책 목록 조회",
@@ -53,7 +55,29 @@ public interface BookDocs {
                     @ApiResponse(responseCode = "500", description = "서버 오류")
             }
     )
-    ApiResponseTemplate<BookRecommendResponse> getBookRecommend(
-            // @AuthenticationPrincipal UserDetails userDetails
-    );
+    ApiResponseTemplate<BookRecommendResponse> getBookRecommend();
+
+    @Operation(
+            summary = "감상 중인 작품 목록 조회",
+            description = "현재 사용자가 감상 중인 작품 목록을 반환합니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "감상 중인 작품 목록 조회 성공",
+                            content = @Content(schema = @Schema(implementation = BookResponseList.class))),
+                    @ApiResponse(responseCode = "400", description = "잘못된 요청"),
+                    @ApiResponse(responseCode = "500", description = "서버 오류")
+            }
+    )
+    ApiResponseTemplate<BookResponseList> getReadingBooks(Pageable pageable);
+
+    @Operation(
+            summary = "감상한 작품 목록 조회",
+            description = "현재 사용자가 감상한 작품 목록을 반환합니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "감상한 작품 목록 조회 성공",
+                            content = @Content(schema = @Schema(implementation = BookResponseList.class))),
+                    @ApiResponse(responseCode = "400", description = "잘못된 요청"),
+                    @ApiResponse(responseCode = "500", description = "서버 오류")
+            }
+    )
+    ApiResponseTemplate<BookResponseList> getFinishedBooks(Pageable pageable);
 }

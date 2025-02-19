@@ -2,7 +2,15 @@ package store.storymate.storymatebackend.reading.api;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import store.storymate.storymatebackend.global.template.ApiResponseTemplate;
 import store.storymate.storymatebackend.reading.api.dto.request.BookmarkCreateRequest;
 import store.storymate.storymatebackend.reading.api.dto.request.HighlightCreateRequest;
@@ -16,7 +24,7 @@ import store.storymate.storymatebackend.reading.application.MemberBookService;
 @RestController
 @RequestMapping("/api/books/{bookId}")
 @RequiredArgsConstructor
-public class MemberBookController {
+public class MemberBookController implements MemberBookDocs {
 
     private final MemberBookService memberBookService;
 
@@ -27,25 +35,29 @@ public class MemberBookController {
     }
 
     @PostMapping("/highlights")
-    public ApiResponseTemplate<Void> createHighlight(@PathVariable Long bookId, @RequestBody HighlightCreateRequest highlightCreateRequest) {
+    public ApiResponseTemplate<Void> createHighlight(@PathVariable Long bookId,
+                                                     @RequestBody HighlightCreateRequest highlightCreateRequest) {
         memberBookService.createHighlight(bookId, highlightCreateRequest);
         return ApiResponseTemplate.ok("하이라이트 추가 성공");
     }
 
     @PostMapping("/bookmarks")
-    public ApiResponseTemplate<Void> createBookmark(@PathVariable Long bookId, @RequestBody BookmarkCreateRequest bookmarkCreateRequest) {
+    public ApiResponseTemplate<Void> createBookmark(@PathVariable Long bookId,
+                                                    @RequestBody BookmarkCreateRequest bookmarkCreateRequest) {
         memberBookService.createBookmark(bookId, bookmarkCreateRequest);
         return ApiResponseTemplate.ok("북마크 추가 성공");
     }
 
     @PostMapping("/notes")
-    public ApiResponseTemplate<Void> createNote(@PathVariable Long bookId, @RequestBody NoteCreateRequest noteCreateRequest) {
+    public ApiResponseTemplate<Void> createNote(@PathVariable Long bookId,
+                                                @RequestBody NoteCreateRequest noteCreateRequest) {
         memberBookService.createNote(bookId, noteCreateRequest);
         return ApiResponseTemplate.ok("메모 추가 성공");
     }
 
     @PatchMapping("/notes")
-    public ApiResponseTemplate<Void> updateNote(@PathVariable Long bookId, @RequestBody NoteUpdateRequest noteUpdateRequest) {
+    public ApiResponseTemplate<Void> updateNote(@PathVariable Long bookId,
+                                                @RequestBody NoteUpdateRequest noteUpdateRequest) {
         memberBookService.updateNote(noteUpdateRequest);
         return ApiResponseTemplate.ok("메모 수정 성공");
     }

@@ -42,4 +42,8 @@ public class OauthInfo {
                 .nickname(nickname)
                 .build();
     }
+
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
 }

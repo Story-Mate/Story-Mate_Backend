@@ -9,7 +9,7 @@ import store.storymate.storymatebackend.reading.api.dto.PageInfoDto;
 import store.storymate.storymatebackend.reading.api.dto.response.BookDetailResponse;
 import store.storymate.storymatebackend.reading.api.dto.response.BookResponse;
 import store.storymate.storymatebackend.reading.api.dto.response.BookResponseList;
-import store.storymate.storymatebackend.reading.application.dto.BookCriteria;
+import store.storymate.storymatebackend.reading.api.dto.BookCriteria;
 import store.storymate.storymatebackend.reading.domain.Book;
 import store.storymate.storymatebackend.reading.domain.repository.BookRepository;
 import store.storymate.storymatebackend.reading.exception.BookNotFoundException;
@@ -21,9 +21,8 @@ public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
 
     @Override
-    public BookResponseList getBooks(String query, String searchType, String genre, String sortType,
-                                     Pageable pageable) {
-        Page<Book> booksPage = bookRepository.searchBooks(new BookCriteria(query, searchType, genre, sortType), pageable);
+    public BookResponseList getBooks(BookCriteria criteria, Pageable pageable) {
+        Page<Book> booksPage = bookRepository.searchBooks(criteria, pageable);
         List<BookResponse> books = booksPage.map(BookResponse::fromEntity).stream().toList();
         PageInfoDto page = PageInfoDto.from(booksPage);
 

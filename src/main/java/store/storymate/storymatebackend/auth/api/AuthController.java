@@ -3,6 +3,7 @@ package store.storymate.storymatebackend.auth.api;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,7 +18,7 @@ import store.storymate.storymatebackend.auth.dto.request.SocialLoginRequest;
 import store.storymate.storymatebackend.auth.dto.response.AuthTokenResponse;
 import store.storymate.storymatebackend.auth.dto.response.SocialClientResponse;
 
-
+@Tag(name = "[인증 API]", description = "인증 관련 API")
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -45,5 +46,11 @@ public class AuthController {
     @PostMapping("/reissue")
     public AuthTokenResponse reissueTokenPair(@RequestBody @Valid RefreshTokenRequest request) {
         return authService.reissueTokenPair(request);
+    }
+
+    @Operation(summary = "로그아웃", description = "로그아웃합니다.")
+    @PostMapping("/logout")
+    public void logout() {
+        authService.logout();
     }
 }
