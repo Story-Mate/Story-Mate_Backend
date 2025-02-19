@@ -2,6 +2,8 @@ package store.storymate.storymatebackend.reading.application;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,7 @@ import store.storymate.storymatebackend.reading.domain.Book;
 import store.storymate.storymatebackend.reading.domain.repository.BookRepository;
 import store.storymate.storymatebackend.reading.exception.BookNotFoundException;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class BookServiceImpl implements BookService {
@@ -31,8 +34,9 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public BookDetailResponse getBookDetails(Long bookId) {
-        return bookRepository.findById(bookId)
-                .map(BookDetailResponse::fromEntity)
-                .orElseThrow(BookNotFoundException::new);
+        Book book = bookRepository.findById(bookId)
+            .orElseThrow(() -> new BookNotFoundException());
+        log.info("book.getBookTags().size() : {}", book.getBookTags().size());
+        return BookDetailResponse.fromEntity(book);
     }
 }
