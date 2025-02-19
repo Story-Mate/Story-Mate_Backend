@@ -13,6 +13,7 @@ import store.storymate.storymatebackend.member.domain.Member;
 import store.storymate.storymatebackend.reading.api.dto.PageInfoDto;
 import store.storymate.storymatebackend.reading.api.dto.request.BookmarkCreateRequest;
 import store.storymate.storymatebackend.reading.api.dto.request.HighlightCreateRequest;
+import store.storymate.storymatebackend.reading.api.dto.request.MemberBookProgressRequest;
 import store.storymate.storymatebackend.reading.api.dto.request.NoteCreateRequest;
 import store.storymate.storymatebackend.reading.api.dto.request.NoteUpdateRequest;
 import store.storymate.storymatebackend.reading.api.dto.response.BookResponse;
@@ -53,16 +54,29 @@ public class MemberBookServiceImpl implements MemberBookService {
     private int completionThreshold;
 
     @Override
-    public void createMemberBook(Long bookId) {
+    public void createMemberBook(Long bookId, MemberBookProgressRequest request) {
         Member member = memberUtil.getCurrentMember();
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(BookNotFoundException::new);
+
         MemberBook memberBook = MemberBook.builder()
                 .member(member)
                 .book(book)
                 .build();
+
+        float currentProgress = memberBook.getProgress();
+
+        if (currentProgress < request.progress()) {
+            memberBook.updateProgress(request.progress());
+
+            if (memberBook.getProgress() == 100f) {
+                member.addMessageCount(10L);
+            }
+        }
+
         memberBookRepository.save(memberBook);
     }
+
 
     @Override
     public void createBookmark(Long bookId, BookmarkCreateRequest bookmarkCreateRequest) {

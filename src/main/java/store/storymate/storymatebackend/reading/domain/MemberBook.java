@@ -37,4 +37,8 @@ public class MemberBook extends BaseEntity {
         this.member = member;
         this.progress = 0f;
     }
+
+    public void updateProgress(Float progress) {
+        this.progress = progress;
+    }
 }
