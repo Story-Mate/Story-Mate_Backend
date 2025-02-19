@@ -1,6 +1,5 @@
 package store.storymate.storymatebackend.member.api;
 
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,20 +17,26 @@ import store.storymate.storymatebackend.member.application.MemberService;
 import store.storymate.storymatebackend.member.dto.request.RegisterBirthDateRequestDto;
 import store.storymate.storymatebackend.member.dto.response.MemberInfoResponseDto;
 
-@Tag(name = "[멤버 API]", description = "사용자 관련 API")
 @RestController
 @RequestMapping("/member")
 @RequiredArgsConstructor
-public class MemberController implements MemberDocs{
+public class MemberController implements MemberDocs {
     private final MemberService memberService;
 
-    @Operation(summary = "회원 정보 조회", description = "회원 정보를 조회합니다.")
+    @Override
+    @PostMapping("/register-birth-date")
+    public ApiResponseTemplate<MemberInfoResponseDto> registerBirthDate(
+            @RequestBody RegisterBirthDateRequestDto request) {
+        return ApiResponseTemplate.ok("등록이 완료되었습니다.", memberService.registerBirthDate(request));
+    }
+
+    @Override
     @GetMapping("/info")
     public ApiResponseTemplate<MemberResponse> getMemberInfo() {
         return ApiResponseTemplate.ok("회원 정보 조회 성공", memberService.getMemberInfo());
     }
 
-    @Operation(summary = "회원 정보 수정", description = "회원 정보를 수정합니다.")
+    @Override
     @PutMapping("/info")
     public ApiResponseTemplate<Void> updateMemberInfo(
             @RequestBody @Valid MemberUpdateRequest memberUpdateRequest) {
@@ -39,17 +44,10 @@ public class MemberController implements MemberDocs{
         return ApiResponseTemplate.ok("회원 정보 수정 성공");
     }
 
-    @Operation(summary = "회원 탈퇴", description = "회원 탈퇴합니다.")
+    @Override
     @DeleteMapping("/info")
     public ApiResponseTemplate<Void> deleteMember() {
         memberService.deleteMember();
         return ApiResponseTemplate.ok("회원 탈퇴 성공");
-    }
-
-    @Override
-    @PostMapping("/register-birth-date")
-    public ApiResponseTemplate<MemberInfoResponseDto> registerBirthDate(
-            @RequestBody RegisterBirthDateRequestDto request) {
-        return ApiResponseTemplate.ok("등록이 완료되었습니다.", memberService.registerBirthDate(request));
     }
 }
