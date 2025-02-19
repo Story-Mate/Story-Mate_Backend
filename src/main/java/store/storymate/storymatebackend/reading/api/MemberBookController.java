@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import store.storymate.storymatebackend.global.template.ApiResponseTemplate;
 import store.storymate.storymatebackend.reading.api.dto.request.BookmarkCreateRequest;
 import store.storymate.storymatebackend.reading.api.dto.request.HighlightCreateRequest;
+import store.storymate.storymatebackend.reading.api.dto.request.MemberBookProgressRequest;
 import store.storymate.storymatebackend.reading.api.dto.request.NoteCreateRequest;
 import store.storymate.storymatebackend.reading.api.dto.request.NoteUpdateRequest;
 import store.storymate.storymatebackend.reading.api.dto.response.BookmarkResponse;
@@ -29,8 +30,10 @@ public class MemberBookController implements MemberBookDocs {
     private final MemberBookService memberBookService;
 
     @PutMapping("/contents")
-    public ApiResponseTemplate<Void> markAsRead(@PathVariable Long bookId) {
-        memberBookService.createMemberBook(bookId);
+    public ApiResponseTemplate<Void> markAsRead(@PathVariable Long bookId, @RequestBody MemberBookProgressRequest request) {
+        memberBookService.createMemberBook(bookId, request);
+
+
         return ApiResponseTemplate.ok("책을 읽은 목록에 추가 성공");
     }
 

@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.data.domain.Pageable;
 import store.storymate.storymatebackend.reading.api.dto.request.BookmarkCreateRequest;
 import store.storymate.storymatebackend.reading.api.dto.request.HighlightCreateRequest;
+import store.storymate.storymatebackend.reading.api.dto.request.MemberBookProgressRequest;
 import store.storymate.storymatebackend.reading.api.dto.request.NoteCreateRequest;
 import store.storymate.storymatebackend.reading.api.dto.request.NoteUpdateRequest;
 import store.storymate.storymatebackend.reading.api.dto.response.BookResponseList;
@@ -19,7 +20,7 @@ public interface MemberBookService {
      * @param bookId 책 ID
      * @return 읽은 책 목록 추가 결과
      */
-    void createMemberBook(Long bookId);
+    void createMemberBook(Long bookId, MemberBookProgressRequest request);
 
     /**
      * 북마크 입력
