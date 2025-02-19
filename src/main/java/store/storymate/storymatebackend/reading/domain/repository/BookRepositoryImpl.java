@@ -45,17 +45,16 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
             finalPredicate.and(searchPredicate);
         }
 
-        // 장르 필터링 (검색어 여부와 상관없이 항상 적용)
-        if (genre != null && !genre.trim().isEmpty()) {
+        // 장르 필터링 없으면 NONE으로 설정
+        if (!genre.trim().isEmpty() && !genre.equals("NONE")) {
             finalPredicate.and(book.genre.eq(Genre.valueOf(genre.toUpperCase())));
         }
 
-        // 정렬 추가
+        // 정렬 조건 설정
         String sortField = sortType.getField();
-        boolean isAscending = pageable.getSort().isSorted() && pageable.getSort().getOrderFor(sortField).isAscending();
         PathBuilder<Book> bookPath = new PathBuilder<>(Book.class, "book");
 
-        Order order = isAscending ? Order.ASC : Order.DESC;
+        Order order = Order.ASC;
         OrderSpecifier<?> orderSpecifier;
         if (sortField.equals("createdAt") || sortField.equals("publishedAt")) {
             orderSpecifier = new OrderSpecifier<>(order, bookPath.getDateTime(sortField, java.time.LocalDateTime.class)); // 날짜 필드 정렬
