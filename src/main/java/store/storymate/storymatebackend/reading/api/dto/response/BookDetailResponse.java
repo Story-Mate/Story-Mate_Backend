@@ -14,11 +14,7 @@ public record BookDetailResponse(
         String keyword,
         String description
 ) {
-    public static BookDetailResponse fromEntity(Book book) {
-        String tags = "";
-        book.getBookTags().forEach(bookTag -> {
-            "%s%s".formatted(tags, bookTag.getTag().getName());
-        });
+    public static BookDetailResponse fromEntity(Book book, String tags) {
         return BookDetailResponse.builder()
                 .id(book.getId())
                 .title(book.getTitle())
