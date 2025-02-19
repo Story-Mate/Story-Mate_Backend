@@ -10,7 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -50,7 +50,7 @@ public class Book extends BaseEntity {
 
     private Long viewCount = 0L;
 
-    private LocalDateTime publishedAt;
+    private LocalDate publishedAt;
 
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<BookTag> bookTags = new ArrayList<>();
