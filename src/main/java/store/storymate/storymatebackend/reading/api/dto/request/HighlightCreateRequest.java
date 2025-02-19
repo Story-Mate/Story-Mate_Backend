@@ -6,7 +6,8 @@ import store.storymate.storymatebackend.reading.domain.MemberBook;
 public record HighlightCreateRequest(
         int startPosition,
         int endPosition,
-        String paragraph
+        String paragraph,
+        int pageNumber
 ) {
     public static Highlight toEntity(MemberBook memberBook, HighlightCreateRequest highlightCreateRequest) {
         return Highlight.builder()
@@ -14,6 +15,7 @@ public record HighlightCreateRequest(
                 .paragraph(highlightCreateRequest.paragraph())
                 .startPosition(highlightCreateRequest.startPosition())
                 .endPosition(highlightCreateRequest.endPosition())
+                .pageNumber(highlightCreateRequest.pageNumber())
                 .build();
     }
 }

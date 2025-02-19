@@ -160,7 +160,7 @@ public class MemberBookServiceImpl implements MemberBookService {
         ).orElseThrow(MemberBookNotFoundException::new);
         return highlightRepository.findByMemberBook(memberBook).stream()
                 .map(HighlightResponse::fromEntity)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
