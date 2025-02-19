@@ -39,6 +39,7 @@ public class QuizService {
         Map<String, String> requestBody = new HashMap<>();
         requestBody.put("character_name", quizQuestionReqDto.characterName());
         requestBody.put("quiz_type", quizQuestionReqDto.quizType());
+        requestBody.put("book_title", quizQuestionReqDto.bookTitle());
 
         String encodedUri = UriComponentsBuilder.fromPath("/quiz_question")
                 .encode()
