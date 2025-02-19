@@ -1,10 +1,12 @@
 package store.storymate.storymatebackend.reading.application;
 
 import java.util.List;
+import org.springframework.data.domain.Pageable;
 import store.storymate.storymatebackend.reading.api.dto.request.BookmarkCreateRequest;
 import store.storymate.storymatebackend.reading.api.dto.request.HighlightCreateRequest;
 import store.storymate.storymatebackend.reading.api.dto.request.NoteCreateRequest;
 import store.storymate.storymatebackend.reading.api.dto.request.NoteUpdateRequest;
+import store.storymate.storymatebackend.reading.api.dto.response.BookResponseList;
 import store.storymate.storymatebackend.reading.api.dto.response.BookmarkResponse;
 import store.storymate.storymatebackend.reading.api.dto.response.HighlightResponse;
 import store.storymate.storymatebackend.reading.api.dto.response.NoteResponse;
@@ -22,7 +24,7 @@ public interface MemberBookService {
     /**
      * 북마크 입력
      *
-     * @param bookId 책 ID
+     * @param bookId                책 ID
      * @param bookmarkCreateRequest 북마크 정보
      * @return 북마크 결과
      */
@@ -96,4 +98,18 @@ public interface MemberBookService {
      * @return 하이라이트 삭제 결과
      */
     void deleteHighlight(Long highlightId);
+
+    /**
+     * 감상 중인 작품 목록 조회: 현재 사용자가 감상 중인 작품 목록을 반환합니다.
+     *
+     * @return 감상 중인 작품 목록
+     */
+    BookResponseList getReadingBooks(Pageable pageable);
+
+    /**
+     * 감상한 작품 목록 조회: 현재 사용자가 감상한 작품 목록을 반환합니다.
+     *
+     * @return 감상한 작품 목록 목록
+     */
+    BookResponseList getFinishedBooks(Pageable pageable);
 }

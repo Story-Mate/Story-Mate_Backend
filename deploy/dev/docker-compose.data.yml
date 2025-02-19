@@ -1,0 +1,49 @@
+services:
+  db:
+    container_name: storymate-db
+    image: bitnami/mariadb:11.4
+    ports:
+      - "3306:3306"
+    expose:
+      - "3306"
+    environment:
+      - TZ=Asia/Seoul
+      - MARIADB_DATABASE=${MARIADB_DATABASE}
+      - MARIADB_PORT=${MARIADB_PORT}
+      - MYSQL_DATA_DIR=${MYSQL_DATA_DIR}
+      - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
+      - MARIADB_USER=${MARIADB_USER}
+      - MARIADB_PASSWORD=${MARIADB_PASSWORD}
+      - MARIADB_ROOT_HOST=%
+      - LC_ALL=C.UTF-8
+    volumes:
+      - ~/docker/mariadb/etc/mysql/conf.d:/etc/mysql/conf.d:ro
+      - ~/docker/mariadb/var/lib/mysql:/var/lib/mysql
+      - ~/docker/mariadb/var/log/maria:/var/log/maria
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - mariadb_data:/var/lib/mysql
+    networks:
+      - db-connection
+  cache:
+    container_name: storymate-cache
+    image: redis:7.2-alpine
+    ports:
+      - "6379:6379"
+    expose:
+      - "6379"
+    volumes:
+      - ~/docker/redis/data:/data
+      - redis_data:/data
+    networks:
+      - db-connection
+    command: redis-server --appendonly yes
+
+networks:
+  db-connection:
+    external: true
+
+volumes:
+  mariadb_data:
+    driver: local
+  redis_data:
+    driver: local

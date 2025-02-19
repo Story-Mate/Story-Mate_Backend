@@ -36,6 +36,12 @@ jwt:
 
 server:
   url: ${PROD_SERVER_URL}
+  tomcat:
+    keep-alive-timeout: 15m
 
 ai:
   characters: ${AI_CHARACTERS_API}
+
+reading:
+  completion:
+    threshold: 98

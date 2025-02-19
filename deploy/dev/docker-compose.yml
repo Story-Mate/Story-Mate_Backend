@@ -27,57 +27,7 @@ services:
       - DEV_SERVER_URL=${DEV_SERVER_URL}
     networks:
       - db-connection
-    depends_on:
-      db:
-        condition: service_healthy
-      cache:
-        condition: service_healthy
-  db:
-    container_name: storymate-db
-    image: bitnami/mariadb:11.4
-    ports:
-      - "3306:3306"
-    expose:
-      - "3306"
-    environment:
-      - TZ=Asia/Seoul
-      - MARIADB_DATABASE=${MARIADB_DATABASE}
-      - MARIADB_PORT=${MARIADB_PORT}
-      - MYSQL_DATA_DIR=${MYSQL_DATA_DIR}
-      - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
-      - MARIADB_USER=${MARIADB_USER}
-      - MARIADB_PASSWORD=${MARIADB_PASSWORD}
-      - MARIADB_ROOT_HOST=%
-      - LC_ALL=C.UTF-8
-    volumes:
-      - ~/docker/mariadb/etc/mysql/conf.d:/etc/mysql/conf.d:ro
-      - ~/docker/mariadb/var/lib/mysql:/var/lib/mysql
-      - ~/docker/mariadb/var/log/maria:/var/log/maria
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-    networks:
-      - db-connection
-    healthcheck:
-      test: [ "CMD-SHELL", "mysqladmin ping -h localhost -p${MARIADB_ROOT_PASSWORD}" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-  cache:
-    container_name: storymate-cache
-    image: redis:7.2-alpine
-    ports:
-      - "6379:6379"
-    expose:
-      - "6379"
-    networks:
-      - db-connection
-    command: redis-server --appendonly yes
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
 networks:
   db-connection:
-    driver: bridge
-
+    external: true

@@ -35,5 +35,6 @@ public class MemberBook extends BaseEntity {
     public MemberBook(Book book, Member member) {
         this.book = book;
         this.member = member;
+        this.progress = 0f;
     }
 }

@@ -4,13 +4,19 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import store.storymate.storymatebackend.global.util.MemberUtil;
 import store.storymate.storymatebackend.member.domain.Member;
+import store.storymate.storymatebackend.reading.api.dto.PageInfoDto;
 import store.storymate.storymatebackend.reading.api.dto.request.BookmarkCreateRequest;
 import store.storymate.storymatebackend.reading.api.dto.request.HighlightCreateRequest;
 import store.storymate.storymatebackend.reading.api.dto.request.NoteCreateRequest;
 import store.storymate.storymatebackend.reading.api.dto.request.NoteUpdateRequest;
+import store.storymate.storymatebackend.reading.api.dto.response.BookResponse;
+import store.storymate.storymatebackend.reading.api.dto.response.BookResponseList;
 import store.storymate.storymatebackend.reading.api.dto.response.BookmarkResponse;
 import store.storymate.storymatebackend.reading.api.dto.response.HighlightResponse;
 import store.storymate.storymatebackend.reading.api.dto.response.NoteResponse;
@@ -42,6 +48,9 @@ public class MemberBookServiceImpl implements MemberBookService {
     private final HighlightRepository highlightRepository;
 
     private final MemberUtil memberUtil;
+
+    @Value("${reading.completion.threshold}")
+    private int completionThreshold;
 
     @Override
     public void createMemberBook(Long bookId) {
@@ -145,5 +154,31 @@ public class MemberBookServiceImpl implements MemberBookService {
         Highlight highlight = highlightRepository.findById(highlightId)
                 .orElseThrow(HighlightNotFoundException::new);
         highlightRepository.delete(highlight);
+    }
+
+    @Override
+    public BookResponseList getReadingBooks(Pageable pageable) {
+        Page<MemberBook> memberBooksPage = memberBookRepository.findByMemberIdAndProgressIsLessThan(
+                memberUtil.getCurrentMember().getId(), (float) completionThreshold, pageable);
+
+        List<BookResponse> readingBooks = memberBooksPage.stream()
+                .map(MemberBook::getBook)
+                .map(BookResponse::fromEntity)
+                .toList();
+
+        return BookResponseList.of(readingBooks, PageInfoDto.from(memberBooksPage));
+    }
+
+    @Override
+    public BookResponseList getFinishedBooks(Pageable pageable) {
+        Page<MemberBook> memberBooksPage = memberBookRepository.findByMemberIdAndProgressIsGreaterThanEqual(
+                memberUtil.getCurrentMember().getId(), (float) completionThreshold, pageable);
+
+        List<BookResponse> finishedBooks = memberBooksPage.stream()
+                .map(MemberBook::getBook)
+                .map(BookResponse::fromEntity)
+                .toList();
+
+        return BookResponseList.of(finishedBooks, PageInfoDto.from(memberBooksPage));
     }
 }

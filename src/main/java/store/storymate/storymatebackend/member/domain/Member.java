@@ -48,6 +48,9 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Status status;
 
+    @Column(name = "birth_date")
+    private LocalDate birthDate;
+
     @Builder(access = AccessLevel.PRIVATE)
     private Member(OauthInfo oauthInfo, String nickname, MemberRole memberRole, int age,
                    String profileImageUrl, Long messageCount, String inviteCode, Status status) {
@@ -58,6 +61,7 @@ public class Member extends BaseEntity {
         this.messageCount = messageCount;
         this.inviteCode = inviteCode;
         this.status = status;
+        this.birthDate = null;
     }
 
     public static Member createMember(OAuthProvider oAuthProvider,
@@ -78,18 +82,15 @@ public class Member extends BaseEntity {
                 .build();
     }
 
-    private static int calculateAgeFromBirthYear(String birthYear) {
-        int currentYear = LocalDate.now().getYear();
-        int birthYearInt = Integer.parseInt(birthYear);
-
-        return currentYear - birthYearInt;
-    }
-
     public void updateLastLoginAt() {
         this.lastLoginAt = LocalDateTime.now();
     }
 
     public void updateStatus(Status status) {
         this.status = status;
+    }
+
+    public void updateBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
     }
 }

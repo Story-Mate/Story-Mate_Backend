@@ -3,18 +3,20 @@ package store.storymate.storymatebackend.reading.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import org.springframework.web.bind.annotation.*;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import store.storymate.storymatebackend.global.template.ApiResponseTemplate;
 import store.storymate.storymatebackend.reading.api.dto.request.BookmarkCreateRequest;
 import store.storymate.storymatebackend.reading.api.dto.request.HighlightCreateRequest;
 import store.storymate.storymatebackend.reading.api.dto.request.NoteCreateRequest;
 import store.storymate.storymatebackend.reading.api.dto.request.NoteUpdateRequest;
+import store.storymate.storymatebackend.reading.api.dto.response.BookmarkResponse;
 import store.storymate.storymatebackend.reading.api.dto.response.HighlightResponse;
 import store.storymate.storymatebackend.reading.api.dto.response.NoteResponse;
-import store.storymate.storymatebackend.reading.api.dto.response.BookmarkResponse;
 
-import java.util.List;
-
+@Tag(name = "[작품 감상 API]", description = "작품 감상 관련 API")
 public interface MemberBookDocs {
 
     @Operation(
@@ -62,7 +64,7 @@ public interface MemberBookDocs {
             }
     )
     ApiResponseTemplate<Void> createNote(@Parameter(description = "책 ID") @PathVariable Long bookId,
-                                          @RequestBody NoteCreateRequest noteCreateRequest);
+                                         @RequestBody NoteCreateRequest noteCreateRequest);
 
     @Operation(
             summary = "메모 수정",
@@ -74,7 +76,7 @@ public interface MemberBookDocs {
             }
     )
     ApiResponseTemplate<Void> updateNote(@Parameter(description = "책 ID") @PathVariable Long bookId,
-                                          @RequestBody NoteUpdateRequest noteUpdateRequest);
+                                         @RequestBody NoteUpdateRequest noteUpdateRequest);
 
     @Operation(
             summary = "하이라이트 조회",
@@ -85,7 +87,8 @@ public interface MemberBookDocs {
                     @ApiResponse(responseCode = "500", description = "서버 오류")
             }
     )
-    ApiResponseTemplate<List<HighlightResponse>> getHighlights(@Parameter(description = "책 ID") @PathVariable Long bookId);
+    ApiResponseTemplate<List<HighlightResponse>> getHighlights(
+            @Parameter(description = "책 ID") @PathVariable Long bookId);
 
     @Operation(
             summary = "북마크 조회",
@@ -96,7 +99,8 @@ public interface MemberBookDocs {
                     @ApiResponse(responseCode = "500", description = "서버 오류")
             }
     )
-    ApiResponseTemplate<List<BookmarkResponse>> getBookmarks(@Parameter(description = "책 ID") @PathVariable Long bookId);
+    ApiResponseTemplate<List<BookmarkResponse>> getBookmarks(
+            @Parameter(description = "책 ID") @PathVariable Long bookId);
 
     @Operation(
             summary = "메모 조회",
@@ -143,5 +147,5 @@ public interface MemberBookDocs {
             }
     )
     ApiResponseTemplate<Void> deleteNote(@Parameter(description = "책 ID") @PathVariable Long bookId,
-                                          @Parameter(description = "메모 ID") @PathVariable Long noteId);
+                                         @Parameter(description = "메모 ID") @PathVariable Long noteId);
 }
