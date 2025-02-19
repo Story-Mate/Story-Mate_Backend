@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import store.storymate.storymatebackend.global.util.MemberUtil;
 import store.storymate.storymatebackend.member.domain.Member;
 import store.storymate.storymatebackend.reading.api.dto.PageInfoDto;
@@ -54,6 +55,7 @@ public class MemberBookServiceImpl implements MemberBookService {
     private int completionThreshold;
 
     @Override
+    @Transactional
     public void createMemberBook(Long bookId, MemberBookProgressRequest request) {
         Member member = memberUtil.getCurrentMember();
         Book book = bookRepository.findById(bookId)
@@ -62,23 +64,33 @@ public class MemberBookServiceImpl implements MemberBookService {
         MemberBook memberBook = MemberBook.builder()
                 .member(member)
                 .book(book)
+                .progress(request.progress())
                 .build();
 
-        float currentProgress = memberBook.getProgress();
-
-        if (currentProgress < request.progress()) {
-            memberBook.updateProgress(request.progress());
-
-            if (memberBook.getProgress() == 100f) {
-                member.addMessageCount(10L);
-            }
-        }
-
-        memberBookRepository.save(memberBook);
+        memberBookRepository.findByMemberIdAndBookId(member.getId(), bookId)
+                .ifPresentOrElse(
+                        mb -> {
+                            if (mb.getProgress() < request.progress()) {
+                                mb.updateProgress(request.progress());
+                                checkAndRewardForCompletedBook(mb, member);
+                            }
+                        },
+                        () -> {
+                            memberBook.updateProgress(request.progress());
+                            memberBookRepository.save(memberBook);
+                            checkAndRewardForCompletedBook(memberBook, member);
+                        }
+                );
     }
 
+    private static void checkAndRewardForCompletedBook(MemberBook memberBook, Member member) {
+        if (memberBook.getProgress() == 100f) {
+            member.addMessageCount(10L);
+        }
+    }
 
     @Override
+    @Transactional
     public void createBookmark(Long bookId, BookmarkCreateRequest bookmarkCreateRequest) {
         MemberBook memberBook = memberBookRepository.findByMemberIdAndBookId(
                 memberUtil.getCurrentMember().getId(),
@@ -89,6 +101,7 @@ public class MemberBookServiceImpl implements MemberBookService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<BookmarkResponse> getBookmarks(Long bookId) {
         MemberBook memberBook = memberBookRepository.findByMemberIdAndBookId(
                 memberUtil.getCurrentMember().getId(),
@@ -100,6 +113,7 @@ public class MemberBookServiceImpl implements MemberBookService {
     }
 
     @Override
+    @Transactional
     public void deleteBookmark(Long bookmarkId) {
         Bookmark bookmark = bookmarkRepository.findById(bookmarkId)
                 .orElseThrow(BookmarkNotFoundException::new);
@@ -107,6 +121,7 @@ public class MemberBookServiceImpl implements MemberBookService {
     }
 
     @Override
+    @Transactional
     public void createNote(Long bookId, NoteCreateRequest noteCreateRequest) {
         MemberBook memberBook = memberBookRepository.findByMemberIdAndBookId(
                 memberUtil.getCurrentMember().getId(),
@@ -117,6 +132,7 @@ public class MemberBookServiceImpl implements MemberBookService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<NoteResponse> getNotes(Long bookId) {
         MemberBook memberBook = memberBookRepository.findByMemberIdAndBookId(
                 memberUtil.getCurrentMember().getId(),
@@ -128,6 +144,7 @@ public class MemberBookServiceImpl implements MemberBookService {
     }
 
     @Override
+    @Transactional
     public void updateNote(NoteUpdateRequest noteUpdateRequest) {
         Note note = noteRepository.findById(noteUpdateRequest.noteId())
                 .orElseThrow(NoteNotFoundException::new);
@@ -136,6 +153,7 @@ public class MemberBookServiceImpl implements MemberBookService {
     }
 
     @Override
+    @Transactional
     public void deleteNote(Long noteId) {
         Note note = noteRepository.findById(noteId)
                 .orElseThrow(NoteNotFoundException::new);
@@ -143,6 +161,7 @@ public class MemberBookServiceImpl implements MemberBookService {
     }
 
     @Override
+    @Transactional
     public void createHighlight(Long bookId, HighlightCreateRequest highlightCreateRequest) {
         MemberBook memberBook = memberBookRepository.findByMemberIdAndBookId(
                 memberUtil.getCurrentMember().getId(),
@@ -153,6 +172,7 @@ public class MemberBookServiceImpl implements MemberBookService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<HighlightResponse> getHighlights(Long bookId) {
         MemberBook memberBook = memberBookRepository.findByMemberIdAndBookId(
                 memberUtil.getCurrentMember().getId(),
@@ -160,10 +180,11 @@ public class MemberBookServiceImpl implements MemberBookService {
         ).orElseThrow(MemberBookNotFoundException::new);
         return highlightRepository.findByMemberBook(memberBook).stream()
                 .map(HighlightResponse::fromEntity)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     @Override
+    @Transactional
     public void deleteHighlight(Long highlightId) {
         Highlight highlight = highlightRepository.findById(highlightId)
                 .orElseThrow(HighlightNotFoundException::new);
@@ -171,6 +192,7 @@ public class MemberBookServiceImpl implements MemberBookService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public BookResponseList getReadingBooks(Pageable pageable) {
         Page<MemberBook> memberBooksPage = memberBookRepository.findByMemberIdAndProgressIsLessThan(
                 memberUtil.getCurrentMember().getId(), (float) completionThreshold, pageable);
@@ -184,6 +206,7 @@ public class MemberBookServiceImpl implements MemberBookService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public BookResponseList getFinishedBooks(Pageable pageable) {
         Page<MemberBook> memberBooksPage = memberBookRepository.findByMemberIdAndProgressIsGreaterThanEqual(
                 memberUtil.getCurrentMember().getId(), (float) completionThreshold, pageable);
