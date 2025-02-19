@@ -31,6 +31,8 @@ public class Highlight extends BaseEntity {
     @Column(nullable = false)
     private int endPosition;
 
+    private int pageNumber;
+
     @ManyToOne
     @JoinColumn(name = "member_book_id", nullable = false)
     private MemberBook memberBook;
@@ -39,10 +41,12 @@ public class Highlight extends BaseEntity {
     public Highlight(String paragraph,
                      int startPosition,
                      int endPosition,
+                     int pageNumber,
                      MemberBook memberBook) {
         this.paragraph = paragraph;
         this.startPosition = startPosition;
         this.endPosition = endPosition;
+        this.pageNumber = pageNumber;
         this.memberBook = memberBook;
     }
 }
