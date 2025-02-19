@@ -36,6 +36,10 @@ jwt:
 
 server:
   url: ${DEV_SERVER_URL}
+  tomcat:
+    keep-alive-timeout: 15m
 
 ai:
   characters: ${AI_CHARACTERS_API}
+
+
