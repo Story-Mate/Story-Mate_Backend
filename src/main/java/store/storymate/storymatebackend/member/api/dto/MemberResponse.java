@@ -1,5 +1,6 @@
 package store.storymate.storymatebackend.member.api.dto;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.Builder;
 import store.storymate.storymatebackend.member.domain.Member;
@@ -7,7 +8,7 @@ import store.storymate.storymatebackend.member.domain.Member;
 @Builder
 public record MemberResponse(
         String nickname,
-        LocalDateTime birthDate,
+        LocalDate birthDate,
         String profileImageUrl,
         Long messageCount,
         String inviteCode
