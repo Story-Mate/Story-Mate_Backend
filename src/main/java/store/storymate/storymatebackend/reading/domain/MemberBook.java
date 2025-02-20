@@ -32,9 +32,13 @@ public class MemberBook extends BaseEntity {
     private Float progress;
 
     @Builder
-    public MemberBook(Book book, Member member) {
+    public MemberBook(Book book, Member member, Float progress) {
         this.book = book;
         this.member = member;
-        this.progress = 0f;
+        this.progress = progress;
+    }
+
+    public void updateProgress(Float progress) {
+        this.progress = progress;
     }
 }

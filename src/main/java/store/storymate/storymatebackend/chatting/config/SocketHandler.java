@@ -28,7 +28,7 @@ public class SocketHandler extends TextWebSocketHandler {
         String[] data = payload.split(":", 4); // ":" 기준으로 메시지 분리 (sender:roomId:content)
 
         if (data.length < 4) {
-            session.sendMessage(new TextMessage("Invalid message format. Use 'sender:roomId:message' format."));
+            session.sendMessage(new TextMessage("Invalid message format. Use 'sender:roomId:bookName:message' format."));
             return;
         }
 

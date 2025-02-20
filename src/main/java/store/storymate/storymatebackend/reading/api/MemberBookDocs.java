@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import store.storymate.storymatebackend.global.template.ApiResponseTemplate;
 import store.storymate.storymatebackend.reading.api.dto.request.BookmarkCreateRequest;
 import store.storymate.storymatebackend.reading.api.dto.request.HighlightCreateRequest;
+import store.storymate.storymatebackend.reading.api.dto.request.MemberBookProgressRequest;
 import store.storymate.storymatebackend.reading.api.dto.request.NoteCreateRequest;
 import store.storymate.storymatebackend.reading.api.dto.request.NoteUpdateRequest;
 import store.storymate.storymatebackend.reading.api.dto.response.BookmarkResponse;
@@ -28,7 +29,7 @@ public interface MemberBookDocs {
                     @ApiResponse(responseCode = "500", description = "서버 오류")
             }
     )
-    ApiResponseTemplate<Void> markAsRead(@Parameter(description = "책 ID") @PathVariable Long bookId);
+    ApiResponseTemplate<Void> markAsRead(@Parameter(description = "책 ID") @PathVariable Long bookId, @RequestBody MemberBookProgressRequest request);
 
     @Operation(
             summary = "하이라이트 입력",
