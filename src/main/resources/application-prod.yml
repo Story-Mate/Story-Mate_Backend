@@ -45,3 +45,10 @@ ai:
 reading:
   completion:
     threshold: 98
+
+kakao-pay:
+  secret-key: ${KAKAO_PAY_SECRET_KEY}
+  cid: TC0ONETIME
+  approval_url: ${KAKAO_PAY_APPROVAL_URL}
+  cancel_url: ${KAKAO_PAY_CANCEL_URL}
+  fail_url: ${KAKAO_PAY_FAIL_URL}

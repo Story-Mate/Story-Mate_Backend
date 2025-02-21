@@ -45,3 +45,10 @@ ai:
 reading:
   completion:
     threshold: 98
+
+kakao-pay:
+  secret-key: ${KAKAO_PAY_SECRET_KEY}
+  cid: TC0ONETIME
+  approval_url: http://localhost:8080/approve
+  cancel_url: http://localhost:8080/cancel
+  fail_url: http://localhost:8080/fail
