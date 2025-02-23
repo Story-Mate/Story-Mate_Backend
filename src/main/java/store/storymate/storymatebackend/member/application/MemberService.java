@@ -55,4 +55,9 @@ public class MemberService {
 
         return MemberInfoResponseDto.of(member);
     }
+
+    @Transactional
+    public void decreaseMessageCount(Long memberId) {
+        memberRepository.decrementMessageCount(memberId);
+    }
 }
