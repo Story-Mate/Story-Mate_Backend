@@ -17,6 +17,7 @@ import store.storymate.storymatebackend.quiz.api.dto.request.QuizAnswerReqDto;
 import store.storymate.storymatebackend.quiz.api.dto.request.QuizQuestionReqDto;
 import store.storymate.storymatebackend.quiz.api.dto.response.QuizAnswerResDto;
 import store.storymate.storymatebackend.quiz.api.dto.response.QuizQuestionResDto;
+import store.storymate.storymatebackend.quiz.domain.CorrectAnswerType;
 import store.storymate.storymatebackend.quiz.exception.AiQuizQuestionException;
 
 @Service
@@ -87,15 +88,14 @@ public class QuizService {
 
         Member member = memberUtil.getCurrentMember();
 
-        if (response != null && isCorrectAnswer(response.correct())) {
-            member.addMessageCount(3L);
+        if (response != null) {
+            CorrectAnswerType answerType = CorrectAnswerType.fromString(response.correct());
+
+            if (answerType != null) {
+                member.addMessageCount(answerType.getPoints());
+            }
         }
 
         return response;
     }
-
-    private boolean isCorrectAnswer(String correct) {
-        return "O".equalsIgnoreCase(correct) || "C".equalsIgnoreCase(correct) || "true".equalsIgnoreCase(correct);
-    }
-
 }
