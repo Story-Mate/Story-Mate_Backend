@@ -11,10 +11,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
+import store.storymate.storymatebackend.global.util.MemberUtil;
+import store.storymate.storymatebackend.member.domain.Member;
 import store.storymate.storymatebackend.quiz.api.dto.request.QuizAnswerReqDto;
 import store.storymate.storymatebackend.quiz.api.dto.request.QuizQuestionReqDto;
 import store.storymate.storymatebackend.quiz.api.dto.response.QuizAnswerResDto;
 import store.storymate.storymatebackend.quiz.api.dto.response.QuizQuestionResDto;
+import store.storymate.storymatebackend.quiz.domain.CorrectAnswerType;
 import store.storymate.storymatebackend.quiz.exception.AiQuizQuestionException;
 
 @Service
@@ -23,6 +26,7 @@ import store.storymate.storymatebackend.quiz.exception.AiQuizQuestionException;
 public class QuizService {
 
     private WebClient webClient;
+    private final MemberUtil memberUtil;
 
     @Value("${ai.characters}")
     private String baseUrl;
@@ -58,7 +62,7 @@ public class QuizService {
                 .block();
     }
 
-    // AI 답변 받는 기능
+    @Transactional
     public QuizAnswerResDto callAiAnswerApi(QuizAnswerReqDto quizQuestionReqDto) {
         Map<String, String> requestBody = new HashMap<>();
         requestBody.put("book_title", quizQuestionReqDto.bookTitle());
@@ -70,7 +74,7 @@ public class QuizService {
                 .encode()
                 .toUriString();
 
-        return webClient.post()
+        QuizAnswerResDto response = webClient.post()
                 .uri(encodedUri)
                 .bodyValue(requestBody)
                 .retrieve()
@@ -81,5 +85,17 @@ public class QuizService {
                 )
                 .bodyToMono(QuizAnswerResDto.class)
                 .block();
+
+        Member member = memberUtil.getCurrentMember();
+
+        if (response != null) {
+            CorrectAnswerType answerType = CorrectAnswerType.fromString(response.correct());
+
+            if (answerType != null) {
+                member.addMessageCount(answerType.getPoints());
+            }
+        }
+
+        return response;
     }
 }

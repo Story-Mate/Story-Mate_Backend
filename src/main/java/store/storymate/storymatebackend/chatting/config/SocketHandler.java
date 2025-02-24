@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
@@ -13,6 +14,10 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import store.storymate.storymatebackend.chatting.api.dto.request.ChatMessageSaveReqDto;
 import store.storymate.storymatebackend.chatting.application.ChatMessageService;
 import store.storymate.storymatebackend.chatting.application.ChatRoomService;
+import store.storymate.storymatebackend.chatting.domain.ChatRoom;
+import store.storymate.storymatebackend.chatting.domain.repository.ChatRoomRepository;
+import store.storymate.storymatebackend.member.application.MemberService;
+import store.storymate.storymatebackend.member.domain.Member;
 
 @Component
 @RequiredArgsConstructor
@@ -21,6 +26,7 @@ public class SocketHandler extends TextWebSocketHandler {
     private final Map<String, List<WebSocketSession>> chatRooms = new HashMap<>();
     private final ChatMessageService chatMessageService;
     private final ChatRoomService chatRoomService;
+    private final MemberService memberService;
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
@@ -36,6 +42,24 @@ public class SocketHandler extends TextWebSocketHandler {
         String roomId = data[1]; // 채팅방 ID
         String bookTitle = data[2]; // 책 제목
         String content = data[3]; // 메시지 내용
+
+        // 0. 메시지를 보낸 사용자의 messageCount 감소
+        Optional<ChatRoom> chatRoomOptional = chatRoomService.findChatRoomById(Long.parseLong(roomId));
+        if (chatRoomOptional.isPresent()) {
+            ChatRoom chatRoom = chatRoomOptional.get();
+            Member member = chatRoom.getMember();
+
+            if (member != null) {
+                Long messageCount = member.getMessageCount(); // ✅ 현재 messageCount 조회
+
+                if (messageCount <= 0) {
+                    session.sendMessage(new TextMessage("⚠️ 메시지를 보낼 수 없습니다. 남은 메시지 횟수가 없습니다."));
+                    return;
+                }
+
+                memberService.decreaseMessageCount(member.getId());
+            }
+        }
 
         // 1. 메시지 저장
         ChatMessageSaveReqDto chatMessageSaveMemberReqDto = 

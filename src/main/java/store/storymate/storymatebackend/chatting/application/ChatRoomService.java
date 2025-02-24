@@ -1,6 +1,7 @@
 package store.storymate.storymatebackend.chatting.application;
 
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -97,5 +98,10 @@ public class ChatRoomService {
                 .orElseThrow(ExistsChatRoomException::new);
 
         return chatRoom.getCharacters().getName();
+    }
+
+    public Optional<ChatRoom> findChatRoomById(Long roomId) {
+        return Optional.ofNullable(chatRoomRepository.findByIdWithMember(roomId)
+                .orElseThrow(ExistsChatRoomException::new));
     }
 }
