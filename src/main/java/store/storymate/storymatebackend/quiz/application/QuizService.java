@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
+import store.storymate.storymatebackend.global.util.MemberUtil;
+import store.storymate.storymatebackend.member.domain.Member;
 import store.storymate.storymatebackend.quiz.api.dto.request.QuizAnswerReqDto;
 import store.storymate.storymatebackend.quiz.api.dto.request.QuizQuestionReqDto;
 import store.storymate.storymatebackend.quiz.api.dto.response.QuizAnswerResDto;
@@ -23,6 +25,7 @@ import store.storymate.storymatebackend.quiz.exception.AiQuizQuestionException;
 public class QuizService {
 
     private WebClient webClient;
+    private final MemberUtil memberUtil;
 
     @Value("${ai.characters}")
     private String baseUrl;
@@ -58,7 +61,7 @@ public class QuizService {
                 .block();
     }
 
-    // AI 답변 받는 기능
+    @Transactional
     public QuizAnswerResDto callAiAnswerApi(QuizAnswerReqDto quizQuestionReqDto) {
         Map<String, String> requestBody = new HashMap<>();
         requestBody.put("book_title", quizQuestionReqDto.bookTitle());
@@ -70,7 +73,7 @@ public class QuizService {
                 .encode()
                 .toUriString();
 
-        return webClient.post()
+        QuizAnswerResDto response = webClient.post()
                 .uri(encodedUri)
                 .bodyValue(requestBody)
                 .retrieve()
@@ -81,5 +84,18 @@ public class QuizService {
                 )
                 .bodyToMono(QuizAnswerResDto.class)
                 .block();
+
+        Member member = memberUtil.getCurrentMember();
+
+        if (response != null && isCorrectAnswer(response.correct())) {
+            member.addMessageCount(3L);
+        }
+
+        return response;
     }
+
+    private boolean isCorrectAnswer(String correct) {
+        return "O".equalsIgnoreCase(correct) || "C".equalsIgnoreCase(correct) || "true".equalsIgnoreCase(correct);
+    }
+
 }

@@ -1,6 +1,7 @@
 package store.storymate.storymatebackend.quiz.api.dto.response;
 
 public record QuizAnswerResDto(
-        String response
+        String response,
+        String correct
 ) {
 }
