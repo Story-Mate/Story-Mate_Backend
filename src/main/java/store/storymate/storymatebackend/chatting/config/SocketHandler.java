@@ -28,6 +28,7 @@ public class SocketHandler extends TextWebSocketHandler {
     private final ChatRoomService chatRoomService;
     private final MemberService memberService;
 
+    // 메서드 분리, 정리
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String payload = message.getPayload();
