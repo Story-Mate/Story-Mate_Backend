@@ -98,4 +98,13 @@ public class QuizService {
 
         return response;
     }
+
+    @Transactional
+    public QuizQuestionResDto callAiQuestionRestartApi(QuizQuestionReqDto quizQuestionReqDto) {
+        Member member = memberUtil.getCurrentMember();
+
+        member.addMessageCount(-1L);
+
+        return callAiQuestionApi(quizQuestionReqDto);
+    }
 }
