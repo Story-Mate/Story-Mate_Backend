@@ -5,9 +5,9 @@ import lombok.Getter;
 
 @Getter
 public enum CorrectAnswerType {
-    O(3L),
-    C(1L),
-    TRUE(2L);
+    O(5L),
+    C(3L),
+    TRUE(3L);
 
     private final long points;
 
