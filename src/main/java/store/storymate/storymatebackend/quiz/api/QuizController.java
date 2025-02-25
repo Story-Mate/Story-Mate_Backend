@@ -30,4 +30,10 @@ public class QuizController {
             @RequestBody QuizAnswerReqDto quizAnswerReqDto) {
         return ApiResponseTemplate.ok("정답 생성 성공", quizService.callAiAnswerApi(quizAnswerReqDto));
     }
+
+    @GetMapping("/question/restart")
+    public ApiResponseTemplate<QuizQuestionResDto> getAiQuestionRestart(
+            @RequestBody QuizQuestionReqDto quizQuestionReqDto) {
+        return ApiResponseTemplate.ok("퀴즈 생성 성공", quizService.callAiQuestionRestartApi(quizQuestionReqDto));
+    }
 }
