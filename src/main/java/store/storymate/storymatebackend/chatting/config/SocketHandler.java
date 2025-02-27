@@ -15,7 +15,6 @@ import store.storymate.storymatebackend.chatting.api.dto.request.ChatMessageSave
 import store.storymate.storymatebackend.chatting.application.ChatMessageService;
 import store.storymate.storymatebackend.chatting.application.ChatRoomService;
 import store.storymate.storymatebackend.chatting.domain.ChatRoom;
-import store.storymate.storymatebackend.chatting.domain.repository.ChatRoomRepository;
 import store.storymate.storymatebackend.member.application.MemberService;
 import store.storymate.storymatebackend.member.domain.Member;
 
@@ -30,81 +29,87 @@ public class SocketHandler extends TextWebSocketHandler {
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        String payload = message.getPayload();
-        String[] data = payload.split(":", 4); // ":" 기준으로 메시지 분리 (sender:roomId:content)
-
-        if (data.length < 4) {
-            session.sendMessage(new TextMessage("Invalid message format. Use 'sender:roomId:bookName:message' format."));
+        ParsedMessage parsedMessage = parseMessage(message.getPayload());
+        if (parsedMessage == null) {
+            session.sendMessage(
+                    new TextMessage("Invalid message format. Use 'sender:roomId:bookName:message' format."));
             return;
         }
 
-        String sender = data[0]; // 발신자
-        String roomId = data[1]; // 채팅방 ID
-        String bookTitle = data[2]; // 책 제목
-        String content = data[3]; // 메시지 내용
+        // 메시지 카운트 검증 및 감소
+        if (!validateAndDecreaseMessageCount(parsedMessage.roomId(), session)) {
+            return;
+        }
 
-        // 0. 메시지를 보낸 사용자의 messageCount 감소
+        // 사용자 메시지 저장
+        saveUserMessage(parsedMessage);
+
+        // AI 응답 처리 및 저장
+        processAiResponse(parsedMessage);
+    }
+
+    private ParsedMessage parseMessage(String payload) {
+        String[] data = payload.split(":", 4);
+        if (data.length < 4) {
+            return null;
+        }
+        return new ParsedMessage(data[0], data[1], data[2], data[3]);
+    }
+
+    private boolean validateAndDecreaseMessageCount(String roomId, WebSocketSession session) throws Exception {
         Optional<ChatRoom> chatRoomOptional = chatRoomService.findChatRoomById(Long.parseLong(roomId));
         if (chatRoomOptional.isPresent()) {
             ChatRoom chatRoom = chatRoomOptional.get();
             Member member = chatRoom.getMember();
 
-            if (member != null) {
-                Long messageCount = member.getMessageCount(); // ✅ 현재 messageCount 조회
-
-                if (messageCount <= 0) {
-                    session.sendMessage(new TextMessage("⚠️ 메시지를 보낼 수 없습니다. 남은 메시지 횟수가 없습니다."));
-                    return;
-                }
-
-                memberService.decreaseMessageCount(member.getId());
+            if (member != null && member.getMessageCount() <= 0) {
+                session.sendMessage(new TextMessage("⚠️ 메시지를 보낼 수 없습니다. 남은 메시지 횟수가 없습니다."));
+                return false;
             }
+            memberService.decreaseMessageCount(member.getId());
         }
+        return true;
+    }
 
-        // 1. 메시지 저장
-        ChatMessageSaveReqDto chatMessageSaveMemberReqDto = 
-                ChatMessageSaveReqDto.builder()
-                        .roomId(roomId)
-                        .sender(sender)
-                        .content(content)
-                        .build();
+    private void saveUserMessage(ParsedMessage parsedMessage) throws Exception {
+        ChatMessageSaveReqDto chatMessageDto = ChatMessageSaveReqDto.builder()
+                .roomId(parsedMessage.roomId())
+                .sender(parsedMessage.sender())
+                .content(parsedMessage.content())
+                .build();
 
-        chatMessageService.saveMessage(chatMessageSaveMemberReqDto);
+        chatMessageService.saveMessage(chatMessageDto);
 
-        // 2. AI 서버에 메시지 보내고 응답 받기
-        String charactersName = chatRoomService.getCharacterName(Long.parseLong(roomId));
+        broadcastMessage(parsedMessage.roomId(), parsedMessage.sender(), parsedMessage.content());
+    }
 
-        ChatMessageSaveReqDto chatMessageAi =
-                ChatMessageSaveReqDto.builder()
-                        .roomId(roomId)
-                        .sender(charactersName)
-                        .content(content)
-                        .bookTitle(bookTitle)
-                        .build();
+    private void processAiResponse(ParsedMessage parsedMessage) throws Exception {
+        String charactersName = chatRoomService.getCharacterName(Long.parseLong(parsedMessage.roomId()));
+
+        ChatMessageSaveReqDto chatMessageAi = ChatMessageSaveReqDto.builder()
+                .roomId(parsedMessage.roomId())
+                .sender(charactersName)
+                .content(parsedMessage.content())
+                .bookTitle(parsedMessage.bookTitle())
+                .build();
 
         String aiResponse = chatMessageService.callAiApi(chatMessageAi);
 
-        // 3. AI 응답 저장
-        ChatMessageSaveReqDto chatMessageSaveAiReqDto =
-                ChatMessageSaveReqDto.builder()
-                        .roomId(roomId)
-                        .sender(charactersName)
-                        .content(aiResponse)
-                        .build();
+        ChatMessageSaveReqDto chatMessageSaveAiReqDto = ChatMessageSaveReqDto.builder()
+                .roomId(parsedMessage.roomId())
+                .sender(charactersName)
+                .content(aiResponse)
+                .build();
 
         chatMessageService.saveMessage(chatMessageSaveAiReqDto);
-
-        // 4. 사용자 메시지와 AI 응답을 모두 채팅방에 전송
-        broadcastMessageToRoom(roomId, sender + ": " + content);
-        broadcastMessageToRoom(roomId, charactersName + ": " + aiResponse);
+        broadcastMessage(parsedMessage.roomId(), charactersName, aiResponse);
     }
 
-    // 채팅방의 모든 사용자에게 메시지 전송
-    private void broadcastMessageToRoom(String roomId, String message) throws Exception {
+    private void broadcastMessage(String roomId, String sender, String content) throws Exception {
         if (chatRooms.containsKey(roomId)) {
             for (WebSocketSession webSocketSession : chatRooms.get(roomId)) {
                 if (webSocketSession.isOpen()) {
-                    webSocketSession.sendMessage(new TextMessage(message));
+                    webSocketSession.sendMessage(new TextMessage(sender + ": " + content));
                 }
             }
         }
@@ -114,12 +119,14 @@ public class SocketHandler extends TextWebSocketHandler {
     public void afterConnectionEstablished(WebSocketSession session) {
         String uri = session.getUri().toString();
         String roomId = uri.substring(uri.lastIndexOf("/") + 1);
-
         chatRooms.computeIfAbsent(roomId, k -> new ArrayList<>()).add(session);
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         chatRooms.forEach((roomId, sessions) -> sessions.remove(session));
+    }
+
+    private record ParsedMessage(String sender, String roomId, String bookTitle, String content) {
     }
 }
